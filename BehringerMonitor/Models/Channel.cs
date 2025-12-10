@@ -6,16 +6,24 @@ namespace BehringerMonitor.Models;
 
 public class Channel
 {
-    private float fader;
+    public Channel()
+    {
+        Sends = Enumerable.Range(1, 16).Select(c => new ChannelSend()
+        {
+            Id = c,
+        }).ToList();
+    }
+
+    public IReadOnlyList<ChannelSend> Sends { get; }
 
     public required int ChannelNumber { get; set; }
 
     public float Fader
     {
-        get => fader; set
+        get => field; set
         {
             Console.WriteLine($"Channel {ChannelNumber} fader to {value}");
-            fader = value;
+            field = value;
         }
     }
 

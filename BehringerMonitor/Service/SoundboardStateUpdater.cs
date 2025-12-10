@@ -8,7 +8,6 @@ namespace BehringerMonitor.Service
 {
     public partial class SoundboardStateUpdater
     {
-        private static readonly Regex _channelFaderRegex = ChannelFaderRegex();
         private Soundboard _soundBoard;
 
         public SoundboardStateUpdater(Soundboard soundBoard)
@@ -206,5 +205,11 @@ namespace BehringerMonitor.Service
 
         [GeneratedRegex(@"^/ch/(\d+)/mix/on$")]
         private static partial Regex ChannelOnRegex();
+
+        [GeneratedRegex(@"^/ch/(\d+)/mix/(\d+)/on")]
+        private static partial Regex SendOnRegex();
+
+        [GeneratedRegex(@"^/ch/(\d+)/mix/(\d+)/level$")]
+        private static partial Regex SendLevelRegex();
     }
 }
