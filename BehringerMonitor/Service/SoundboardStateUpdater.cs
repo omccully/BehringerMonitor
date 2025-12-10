@@ -57,30 +57,67 @@ namespace BehringerMonitor.Service
 
                 // based on the prop message, it needs to process the rest of the message differently.
 
-                var channelFaderMatch = ChannelFaderRegex().Match(str);
-
-                if (channelFaderMatch.Success)
+                float? ReadFloat()
                 {
-                    int channelNum = int.Parse(channelFaderMatch.Groups[1].Value);
-
-                    Console.WriteLine(str);
                     int mod = i % 4;
                     int remaining = 4 - mod;
                     i += remaining;
 
-                    string debug = string.Join(",", buffer.Skip(i));
-                    Console.WriteLine(debug);
                     // skip ,f~~
                     i += 4;
 
                     if (buffer.Count < i + 4)
                     {
+                        return null;
+                    }
+
+                    return ParseBigEndianFloat(buffer.ToArray(), i);
+                }
+
+                bool? ReadBool()
+                {
+                    int mod = i % 4;
+                    int remaining = 4 - mod;
+                    i += remaining;
+
+                    // skip type tag
+                    i += 4;
+
+                    if (buffer.Count < i + 4)
+                    {
+                        return null;
+                    }
+
+                    byte onVal = buffer[i + 3];
+                    switch (onVal)
+                    {
+                        case 0:
+                           return false;
+                        case 1:
+                            return true;
+                        default:
+                            Console.WriteLine($"Invalid on value: {onVal}");
+                            return null;
+                    }
+                }
+
+                var channelFaderMatch = ChannelFaderRegex().Match(str);
+
+                if (channelFaderMatch.Success)
+                {
+                    Console.WriteLine(str);   
+
+                    string debug = string.Join(",", buffer.Skip(i));
+                    Console.WriteLine(debug);
+
+                    float? parseFloat = ReadFloat();
+                    if (!parseFloat.HasValue)
+                    {
                         message = new byte[0];
                         return false;
                     }
 
-                    float parseFloat = ParseBigEndianFloat(buffer.ToArray(), i);
-
+                    int channelNum = int.Parse(channelFaderMatch.Groups[1].Value);
                     Channel? ch = _soundBoard.TryGetChannel(channelNum);
 
                     if (ch == null)
@@ -89,11 +126,8 @@ namespace BehringerMonitor.Service
                     }
                     else
                     {
-                        ch.Fader = parseFloat;
+                        ch.Fader = parseFloat.Value;
                     }
-
-
-
                 }
 
                 var channelOnMatch = ChannelOnRegex().Match(str);
@@ -102,15 +136,9 @@ namespace BehringerMonitor.Service
                 {
                     int channelNum = int.Parse(channelOnMatch.Groups[1].Value);
 
-                    int mod = i % 4;
-                    int remaining = 4 - mod;
-                    i += remaining;
+                    bool? on = ReadBool();
 
-                    // skip type tag
-                    i += 4;
-
-                    string debug = string.Join(",", buffer.Skip(i));
-                    if (buffer.Count < i + 4)
+                    if (!on.HasValue)
                     {
                         message = new byte[0];
                         return false;
@@ -123,19 +151,7 @@ namespace BehringerMonitor.Service
                     }
                     else
                     {
-                        byte onVal = buffer[i + 3];
-                        switch (onVal)
-                        {
-                            case 0:
-                                ch.Muted = true;
-                                break;
-                            case 1:
-                                ch.Muted = false;
-                                break;
-                            default:
-                                Console.WriteLine($"Invalid on value: {onVal}");
-                                break;
-                        }
+                        ch.Muted = !on.Value;
                     }
                 }
             }
