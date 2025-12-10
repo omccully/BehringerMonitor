@@ -18,14 +18,13 @@ namespace BehringerMonitor.Service
         List<byte> _buffer = new List<byte>();
 
 
-        bool TryParseMessage(List<byte> buffer, out byte[] message)
+        void TryParseMessage(List<byte> buffer)
         {
             while (true)
             {
                 if (buffer.Count == 0)
                 {
-                    message = new byte[0];
-                    return false;
+                    return;
                 }
 
                 if (buffer[0] == 0)
@@ -43,10 +42,9 @@ namespace BehringerMonitor.Service
             {
                 previousBufferLength = buffer.Count;
 
-                if(buffer.Count == 0)
+                if (buffer.Count == 0)
                 {
-                    message = new byte[0];
-                    return false;
+                    return;
                 }
 
                 if (buffer[0] == '/')
@@ -88,7 +86,9 @@ namespace BehringerMonitor.Service
                             return null;
                         }
 
-                        return ParseBigEndianFloat(buffer.ToArray(), i);
+                        float v = ParseBigEndianFloat(buffer.ToArray(), i);
+                        i += 4;
+                        return v;
                     }
 
                     bool? ReadBool()
@@ -106,6 +106,7 @@ namespace BehringerMonitor.Service
                         }
 
                         byte onVal = buffer[i + 3];
+                        i += 4;
                         switch (onVal)
                         {
                             case 0:
@@ -130,11 +131,8 @@ namespace BehringerMonitor.Service
                         float? parseFloat = ReadFloat();
                         if (!parseFloat.HasValue)
                         {
-                            message = new byte[0];
-                            return false;
+                            return;
                         }
-
-                        i += 4;
 
                         int channelNum = int.Parse(channelFaderMatch.Groups[1].Value);
                         Channel? ch = _soundBoard.TryGetChannel(channelNum);
@@ -161,8 +159,7 @@ namespace BehringerMonitor.Service
 
                         if (!on.HasValue)
                         {
-                            message = new byte[0];
-                            return false;
+                            return;
                         }
 
                         Channel? ch = _soundBoard.TryGetChannel(channelNum);
@@ -175,33 +172,82 @@ namespace BehringerMonitor.Service
                             ch.Muted = !on.Value;
                         }
 
-                        i += 4;
+                        FinishedMessage();
+                    }
+
+                    var chSendLevelMatch = SendLevelRegex().Match(str);
+
+                    if (chSendLevelMatch.Success)
+                    {
+                        int channelNum = int.Parse(chSendLevelMatch.Groups[1].Value);
+                        int busNum = int.Parse(chSendLevelMatch.Groups[1].Value);
+
+                        float? parseFloat = ReadFloat();
+                        if (!parseFloat.HasValue)
+                        {
+                            return;
+                        }
+
+                        Channel? ch = _soundBoard.TryGetChannel(channelNum);
+
+                        if (ch == null)
+                        {
+                            Console.WriteLine($"Invalid channel: {channelNum}");
+                        }
+                        else
+                        {
+                            ChannelSend? send = ch.TryGetSend(busNum);
+                            if(send != null)
+                            {
+                                send.Level = parseFloat.Value;
+                            }
+                            else
+                            {
+                                Console.WriteLine($"Invalid channel send: {busNum}");
+                            }
+                        }
+
+                        FinishedMessage();
+                    }
+
+                    var chSendOnMatch = SendOnRegex().Match(str);
+
+                    if (chSendOnMatch.Success)
+                    {
+                        int channelNum = int.Parse(chSendLevelMatch.Groups[1].Value);
+                        int busNum = int.Parse(chSendLevelMatch.Groups[1].Value);
+
+                        bool? on = ReadBool();
+
+                        if (!on.HasValue)
+                        {
+                            return;
+                        }
+
+                        Channel? ch = _soundBoard.TryGetChannel(channelNum);
+
+                        if (ch == null)
+                        {
+                            Console.WriteLine($"Invalid channel: {channelNum}");
+                        }
+                        else
+                        {
+                            ChannelSend? send = ch.TryGetSend(busNum);
+                            if (send != null)
+                            {
+                                send.Muted = !on.Value;
+                            }
+                            else
+                            {
+                                Console.WriteLine($"Invalid channel send: {busNum}");
+                            }
+                        }
 
                         FinishedMessage();
                     }
                 }
             }
             while (previousBufferLength != buffer.Count);
-
-
-            //// Example: length-prefixed messages
-            //if (buffer.Count < 4)
-            //{
-            //    message = null;
-            //    return false;
-            //}
-
-            //int length = BitConverter.ToInt32(buffer.ToArray(), 0);
-            //if (buffer.Count < 4 + length)
-            //{
-            //    message = null;
-            //    return false;
-            //}
-
-            //message = buffer.GetRange(4, length).ToArray();
-            //buffer.RemoveRange(0, 4 + length);
-            message = new byte[0];
-            return true;
         }
 
 
@@ -209,7 +255,7 @@ namespace BehringerMonitor.Service
         {
             _buffer.AddRange(packet);
 
-            TryParseMessage(_buffer, out _);
+            TryParseMessage(_buffer);
         }
 
 

@@ -16,8 +16,10 @@ namespace BehringerMonitor;
 /// </summary>
 public partial class MainWindow : Window
 {
+    public MainWindowViewModel ViewModel { get; }
     public MainWindow()
     {
         InitializeComponent();
+        ViewModel = new MainWindowViewModel();
     }
 }
