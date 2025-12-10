@@ -38,141 +38,169 @@ namespace BehringerMonitor.Service
                 }
             }
 
-            if (buffer[0] == '/')
+            int previousBufferLength;
+            do
             {
-                // beginning of a prop message
+                previousBufferLength = buffer.Count;
 
-                int i = 0;
-                for (; i < buffer.Count; i++)
+                if(buffer.Count == 0)
                 {
-                    if (buffer[i] == 0)
-                    {
-                        break;
-                    }
+                    message = new byte[0];
+                    return false;
                 }
 
-                string str = Encoding.UTF8.GetString(buffer.ToArray(), 0, i);
-                i++;
-
-
-                // based on the prop message, it needs to process the rest of the message differently.
-
-                float? ReadFloat()
+                if (buffer[0] == '/')
                 {
-                    int mod = i % 4;
-                    int remaining = 4 - mod;
-                    i += remaining;
+                    // beginning of a prop message
 
-                    // skip ,f~~
-                    i += 4;
-
-                    if (buffer.Count < i + 4)
+                    int i = 0;
+                    for (; i < buffer.Count; i++)
                     {
-                        return null;
+                        if (buffer[i] == 0)
+                        {
+                            break;
+                        }
                     }
 
-                    return ParseBigEndianFloat(buffer.ToArray(), i);
-                }
+                    string str = Encoding.UTF8.GetString(buffer.ToArray(), 0, i);
+                    i++;
 
-                bool? ReadBool()
-                {
-                    int mod = i % 4;
-                    int remaining = 4 - mod;
-                    i += remaining;
 
-                    // skip type tag
-                    i += 4;
+                    // based on the prop message, it needs to process the rest of the message differently.
 
-                    if (buffer.Count < i + 4)
+                    void FinishedMessage()
                     {
-                        return null;
+                        buffer.RemoveRange(0, i);
+                        i = 0;
                     }
 
-                    byte onVal = buffer[i + 3];
-                    switch (onVal)
+                    float? ReadFloat()
                     {
-                        case 0:
-                           return false;
-                        case 1:
-                            return true;
-                        default:
-                            Console.WriteLine($"Invalid on value: {onVal}");
+                        int mod = i % 4;
+                        int remaining = 4 - mod;
+                        i += remaining;
+
+                        // skip ,f~~
+                        i += 4;
+
+                        if (buffer.Count < i + 4)
+                        {
                             return null;
-                    }
-                }
+                        }
 
-                var channelFaderMatch = ChannelFaderRegex().Match(str);
-
-                if (channelFaderMatch.Success)
-                {
-                    Console.WriteLine(str);   
-
-                    string debug = string.Join(",", buffer.Skip(i));
-                    Console.WriteLine(debug);
-
-                    float? parseFloat = ReadFloat();
-                    if (!parseFloat.HasValue)
-                    {
-                        message = new byte[0];
-                        return false;
+                        return ParseBigEndianFloat(buffer.ToArray(), i);
                     }
 
-                    int channelNum = int.Parse(channelFaderMatch.Groups[1].Value);
-                    Channel? ch = _soundBoard.TryGetChannel(channelNum);
-
-                    if (ch == null)
+                    bool? ReadBool()
                     {
-                        Console.WriteLine($"Invalid channel: {channelNum}");
+                        int mod = i % 4;
+                        int remaining = 4 - mod;
+                        i += remaining;
+
+                        // skip type tag
+                        i += 4;
+
+                        if (buffer.Count < i + 4)
+                        {
+                            return null;
+                        }
+
+                        byte onVal = buffer[i + 3];
+                        switch (onVal)
+                        {
+                            case 0:
+                                return false;
+                            case 1:
+                                return true;
+                            default:
+                                Console.WriteLine($"Invalid on value: {onVal}");
+                                return null;
+                        }
                     }
-                    else
+
+                    var channelFaderMatch = ChannelFaderRegex().Match(str);
+
+                    if (channelFaderMatch.Success)
                     {
-                        ch.Fader = parseFloat.Value;
+                        Console.WriteLine(str);
+
+                        string debug = string.Join(",", buffer.Skip(i));
+                        Console.WriteLine(debug);
+
+                        float? parseFloat = ReadFloat();
+                        if (!parseFloat.HasValue)
+                        {
+                            message = new byte[0];
+                            return false;
+                        }
+
+                        i += 4;
+
+                        int channelNum = int.Parse(channelFaderMatch.Groups[1].Value);
+                        Channel? ch = _soundBoard.TryGetChannel(channelNum);
+
+                        if (ch == null)
+                        {
+                            Console.WriteLine($"Invalid channel: {channelNum}");
+                        }
+                        else
+                        {
+                            ch.Fader = parseFloat.Value;
+                        }
+
+                        FinishedMessage();
                     }
-                }
 
-                var channelOnMatch = ChannelOnRegex().Match(str);
+                    var channelOnMatch = ChannelOnRegex().Match(str);
 
-                if (channelOnMatch.Success)
-                {
-                    int channelNum = int.Parse(channelOnMatch.Groups[1].Value);
-
-                    bool? on = ReadBool();
-
-                    if (!on.HasValue)
+                    if (channelOnMatch.Success)
                     {
-                        message = new byte[0];
-                        return false;
-                    }
+                        int channelNum = int.Parse(channelOnMatch.Groups[1].Value);
 
-                    Channel? ch = _soundBoard.TryGetChannel(channelNum);
-                    if (ch == null)
-                    {
-                        Console.WriteLine($"Invalid channel: {channelNum}");
-                    }
-                    else
-                    {
-                        ch.Muted = !on.Value;
+                        bool? on = ReadBool();
+
+                        if (!on.HasValue)
+                        {
+                            message = new byte[0];
+                            return false;
+                        }
+
+                        Channel? ch = _soundBoard.TryGetChannel(channelNum);
+                        if (ch == null)
+                        {
+                            Console.WriteLine($"Invalid channel: {channelNum}");
+                        }
+                        else
+                        {
+                            ch.Muted = !on.Value;
+                        }
+
+                        i += 4;
+
+                        FinishedMessage();
                     }
                 }
             }
+            while (previousBufferLength != buffer.Count);
 
 
-            // Example: length-prefixed messages
-            if (buffer.Count < 4)
-            {
-                message = null;
-                return false;
-            }
+            //// Example: length-prefixed messages
+            //if (buffer.Count < 4)
+            //{
+            //    message = null;
+            //    return false;
+            //}
 
-            int length = BitConverter.ToInt32(buffer.ToArray(), 0);
-            if (buffer.Count < 4 + length)
-            {
-                message = null;
-                return false;
-            }
+            //int length = BitConverter.ToInt32(buffer.ToArray(), 0);
+            //if (buffer.Count < 4 + length)
+            //{
+            //    message = null;
+            //    return false;
+            //}
 
-            message = buffer.GetRange(4, length).ToArray();
-            buffer.RemoveRange(0, 4 + length);
+            //message = buffer.GetRange(4, length).ToArray();
+            //buffer.RemoveRange(0, 4 + length);
+            message = new byte[0];
             return true;
         }
 
@@ -181,11 +209,7 @@ namespace BehringerMonitor.Service
         {
             _buffer.AddRange(packet);
 
-            while (TryParseMessage(_buffer, out var message))
-            {
-                //ProcessMessage(message);
-            }
-
+            TryParseMessage(_buffer, out _);
         }
 
 
