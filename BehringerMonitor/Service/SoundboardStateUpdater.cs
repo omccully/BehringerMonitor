@@ -214,8 +214,8 @@ namespace BehringerMonitor.Service
 
                     if (chSendOnMatch.Success)
                     {
-                        int channelNum = int.Parse(chSendLevelMatch.Groups[1].Value);
-                        int busNum = int.Parse(chSendLevelMatch.Groups[1].Value);
+                        int channelNum = int.Parse(chSendOnMatch.Groups[1].Value);
+                        int busNum = int.Parse(chSendOnMatch.Groups[1].Value);
 
                         bool? on = ReadBool();
 

@@ -6,7 +6,8 @@
         xmlns:local="clr-namespace:BehringerMonitor"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <Grid>
-
-    </Grid>
+    <StackPanel>
+    <TextBox Text="{Binding Result}" Height="300"></TextBox>
+    <Button Command="{Binding Debug}" Height="30"></Button>
+    </StackPanel>
 </Window>

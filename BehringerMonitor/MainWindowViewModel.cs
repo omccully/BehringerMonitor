@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Net.Sockets;
 using System.Text;
+using System.Windows.Input;
 
 namespace BehringerMonitor
 {
@@ -19,9 +20,12 @@ namespace BehringerMonitor
 
         public MainWindowViewModel()
         {
+            Debug = new MyCommand(this);
             Soundboard = new Soundboard();
             _updater = new SoundboardStateUpdater(Soundboard);
             _udpClient = new UdpClient("10.0.0.120", 10023);
+
+            Result = string.Empty;
 
             _ = Task.Run(() => ReadLoop());
             _ = Initialize();
@@ -37,6 +41,30 @@ namespace BehringerMonitor
             {
                 field = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Result)));
+            }
+        }
+
+        public ICommand Debug { get; } 
+
+        class MyCommand : ICommand
+        {
+            private object _parent;
+
+            public MyCommand(object parent)
+            {
+                _parent = parent;
+            }
+
+            public event EventHandler? CanExecuteChanged;
+
+            public bool CanExecute(object? parameter)
+            {
+                return true;
+            }
+
+            public void Execute(object? parameter)
+            {
+                
             }
         }
 
