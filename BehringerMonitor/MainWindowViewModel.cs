@@ -70,7 +70,7 @@ namespace BehringerMonitor
 
         private async Task Initialize()
         {
-            for(int ch = 1; ch <= 32; ch++)
+            for (int ch = 1; ch <= 32; ch++)
             {
                 _udpClient.Send(EncodeOscString($"/ch/{ch:D2}/mix/fader"));
                 _udpClient.Send(EncodeOscString($"/ch/{ch:D2}/mix/on"));
@@ -80,7 +80,12 @@ namespace BehringerMonitor
                     _udpClient.Send(EncodeOscString($"/ch/{ch:D2}/mix/{send:D2}/level"));
                 }
             }
- 
+
+            while (true)
+            {
+                _udpClient.Send(EncodeOscString($"/xremote"));
+                await Task.Delay(7000);
+            }
         }
 
         private async Task ReadLoop()
@@ -115,7 +120,8 @@ namespace BehringerMonitor
                         errors.AppendLine($"ch{ch} is a very low level to {send.Id}");
                     }
                 }
-                
+
+                Result = errors.ToString();
             }
             
         }
