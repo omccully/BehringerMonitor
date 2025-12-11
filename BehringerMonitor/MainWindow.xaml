@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BehringerMonitor"
+        xmlns:viewmodels="clr-namespace:BehringerMonitor.ViewModels"
         mc:Ignorable="d"
         Title="Behringer Monitor" Height="450" Width="800">
     <StackPanel>
@@ -15,12 +16,12 @@
               <TextBlock Margin="3,3,3,0" 
                          FontSize="15"
                          FontWeight="Bold"
-                         Foreground="Orange"
                      Text="{Binding Path=Text}">
                 <TextBlock.Style>
                   <Style TargetType="TextBlock">
+                    <Setter Property="Foreground" Value="Orange" />
                     <Style.Triggers>
-                      <DataTrigger Binding="{Binding Level}" Value="{x:Static local:ViewModels.SoundBoardWarningLevel.Critical}">
+                      <DataTrigger Binding="{Binding Level}" Value="{x:Static viewmodels:SoundBoardWarningLevel.Critical}">
                         <Setter Property="Foreground" Value="Red" />
                       </DataTrigger>
                     </Style.Triggers>
