@@ -77,8 +77,12 @@ namespace BehringerMonitor.Service
                     float? ReadFloat()
                     {
                         int mod = i % 4;
-                        int remaining = 4 - mod;
-                        i += remaining;
+
+                        if(mod != 0)
+                        {
+                            int remaining = 4 - mod;
+                            i += remaining;
+                        }
 
                         // skip ,f~~
                         i += 4;
@@ -96,8 +100,12 @@ namespace BehringerMonitor.Service
                     bool? ReadBool()
                     {
                         int mod = i % 4;
-                        int remaining = 4 - mod;
-                        i += remaining;
+
+                        if(mod != 0)
+                        {
+                            int remaining = 4 - mod;
+                            i += remaining;
+                        }
 
                         // skip type tag
                         i += 4;
@@ -200,7 +208,7 @@ namespace BehringerMonitor.Service
                         else
                         {
                             ChannelSend? send = ch.TryGetSend(busNum);
-                            if(send != null)
+                            if (send != null)
                             {
                                 Debug.WriteLine($"Setting send {channelNum} -> {send.Id}: {parseFloat.Value}");
                                 send.Level = parseFloat.Value;
@@ -251,6 +259,10 @@ namespace BehringerMonitor.Service
                         FinishedMessage();
                     }
                 }
+                else
+                { 
+
+                }
             }
             while (previousBufferLength != buffer.Count);
         }
@@ -258,6 +270,7 @@ namespace BehringerMonitor.Service
 
         public void Update(byte[] packet)
         {
+            Debug.WriteLine(string.Join(",", packet));
             _buffer.AddRange(packet);
 
             TryParseMessage(_buffer);

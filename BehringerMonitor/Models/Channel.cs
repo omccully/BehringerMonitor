@@ -40,4 +40,9 @@ public class Channel
         return Sends.ElementAt(sendNum - 1);
     }
 
+    public ChannelSend GetSend(int sendNum)
+    {
+        return TryGetSend(sendNum) ?? throw new Exception("Invalid send");
+    }
+
 }

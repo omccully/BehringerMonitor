@@ -25,4 +25,9 @@ public class Soundboard
         }
         return _channels[channelNum - 1];
     }
+
+    public Channel GetChannel(int channelNum)
+    {
+        return TryGetChannel(channelNum) ?? throw new Exception("Invalid Channel");
+    }
 }
