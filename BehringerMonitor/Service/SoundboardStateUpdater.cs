@@ -1,6 +1,7 @@
 ﻿using BehringerMonitor.Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -20,6 +21,7 @@ namespace BehringerMonitor.Service
 
         void TryParseMessage(List<byte> buffer)
         {
+            //Debug.WriteLine(string.Join(",", buffer));
             while (true)
             {
                 if (buffer.Count == 0)
@@ -169,6 +171,7 @@ namespace BehringerMonitor.Service
                         }
                         else
                         {
+                            Debug.WriteLine($"Muted {channelNum}");
                             ch.Muted = !on.Value;
                         }
 
@@ -180,7 +183,7 @@ namespace BehringerMonitor.Service
                     if (chSendLevelMatch.Success)
                     {
                         int channelNum = int.Parse(chSendLevelMatch.Groups[1].Value);
-                        int busNum = int.Parse(chSendLevelMatch.Groups[1].Value);
+                        int busNum = int.Parse(chSendLevelMatch.Groups[2].Value);
 
                         float? parseFloat = ReadFloat();
                         if (!parseFloat.HasValue)
@@ -199,11 +202,12 @@ namespace BehringerMonitor.Service
                             ChannelSend? send = ch.TryGetSend(busNum);
                             if(send != null)
                             {
+                                Debug.WriteLine($"Setting send {channelNum} -> {send.Id}: {parseFloat.Value}");
                                 send.Level = parseFloat.Value;
                             }
                             else
                             {
-                                Console.WriteLine($"Invalid channel send: {busNum}");
+                                Console.WriteLine($"Invalid channel send: level={busNum}");
                             }
                         }
 
@@ -215,7 +219,7 @@ namespace BehringerMonitor.Service
                     if (chSendOnMatch.Success)
                     {
                         int channelNum = int.Parse(chSendOnMatch.Groups[1].Value);
-                        int busNum = int.Parse(chSendOnMatch.Groups[1].Value);
+                        int busNum = int.Parse(chSendOnMatch.Groups[2].Value);
 
                         bool? on = ReadBool();
 
@@ -235,6 +239,7 @@ namespace BehringerMonitor.Service
                             ChannelSend? send = ch.TryGetSend(busNum);
                             if (send != null)
                             {
+                                Debug.WriteLine($"Setting send {channelNum} -> {send.Id}: on={on.Value}");
                                 send.Muted = !on.Value;
                             }
                             else
