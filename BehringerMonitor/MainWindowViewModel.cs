@@ -1,5 +1,6 @@
 ﻿using BehringerMonitor.Models;
 using BehringerMonitor.Service;
+using BehringerMonitor.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -43,6 +44,19 @@ namespace BehringerMonitor
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Result)));
             }
         }
+
+        public IReadOnlyList<SoundBoardWarning> Warnings 
+        { 
+            get
+            {
+                return field;
+            }
+            set
+            {
+                field = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Warnings)));
+            }
+        } 
 
         public ICommand Debug { get; } 
 
@@ -95,32 +109,35 @@ namespace BehringerMonitor
                 var packet = await _udpClient.ReceiveAsync();
                 _updater.Update(packet.Buffer);
 
+                List<SoundBoardWarning> warnings = new();
                 StringBuilder errors = new StringBuilder();
                 for(int ch = 1; ch <= 32; ch++)
                 {
-                    Channel? channel = Soundboard.TryGetChannel(ch);
-                    if(channel == null)
-                    {
-                        throw new Exception("Channel invalid");
-                    }
-
-                    ChannelSend? send = channel.TryGetSend(8);
-                    if(send == null)
-                    {
-                        throw new Exception("Channdl send invalid");
-                    }
-
+                    Channel channel = Soundboard.GetChannel(ch);
+                    ChannelSend send = channel.GetSend(8);
+                    
                     if (send.Muted)
                     {
+                        warnings.Add(new SoundBoardWarning()
+                        {
+                            Text = $"ch{ch} is muted on send to bus {send.Id}",
+                            Level = SoundBoardWarningLevel.Critical,
+                        });
                         errors.AppendLine($"ch{ch} is muted on send to bus {send.Id}");
                     }
 
                     if (send.Level < 0.25)
                     {
+                        warnings.Add(new SoundBoardWarning()
+                        {
+                            Text = $"ch{ch} is a very low level to {send.Id}",
+                            Level = SoundBoardWarningLevel.Critical,
+                        });
                         errors.AppendLine($"ch{ch} is a very low level to {send.Id}");
                     }
                 }
 
+                Warnings = warnings;
                 Result = errors.ToString();
             }
             

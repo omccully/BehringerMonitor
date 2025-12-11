@@ -5,9 +5,32 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BehringerMonitor"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="Behringer Monitor" Height="450" Width="800">
     <StackPanel>
-    <TextBox Text="{Binding Result}" Height="300"></TextBox>
-    <Button Command="{Binding Debug}" Height="30"></Button>
-    </StackPanel>
+    <ItemsControl ItemsSource="{Binding Warnings}">
+      <ItemsControl.ItemTemplate>
+        <DataTemplate>
+          <Grid>
+            <StackPanel>
+              <TextBlock Margin="3,3,3,0" 
+                         FontSize="15"
+                         FontWeight="Bold"
+                         Foreground="Orange"
+                     Text="{Binding Path=Text}">
+                <TextBlock.Style>
+                  <Style TargetType="TextBlock">
+                    <Style.Triggers>
+                      <DataTrigger Binding="{Binding Level}" Value="{x:Static local:ViewModels.SoundBoardWarningLevel.Critical}">
+                        <Setter Property="Foreground" Value="Red" />
+                      </DataTrigger>
+                    </Style.Triggers>
+                  </Style>
+                </TextBlock.Style>
+              </TextBlock>
+            </StackPanel>
+          </Grid>
+        </DataTemplate>
+      </ItemsControl.ItemTemplate>
+    </ItemsControl>
+  </StackPanel>
 </Window>
