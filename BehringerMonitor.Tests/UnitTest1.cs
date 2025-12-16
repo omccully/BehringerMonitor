@@ -131,6 +131,7 @@ public class UnitTest1
         updater.Update(new byte[] { 47, 99, 104, 47, 48, 49, 47, 109, 105, 120, 47, 48, 49, 47, 108, 101, 118, 101, 108, 0, 44, 102, 0, 0, 63, 63, 242, 229 });
 
         Assert.Equal(0.7498, sb.GetChannel(1).GetSend(1).Level, 0.001);
+        Assert.Equal(0.7498, sb.GetBus(1).GetSendFromChannel(1).Level, 0.001);
     }
 
     [Theory]
@@ -144,6 +145,7 @@ public class UnitTest1
         updater.Update(new byte[] { 47, 99, 104, 47, 48, 49, 47, 109, 105, 120, 47, 48, 50, 47, 111, 110, 0, 0, 0, 0, 44, 105, 0, 0, 0, 0, 0, val });
 
         Assert.Equal(expectMuted, sb.GetChannel(1).GetSend(2).Muted);
+        Assert.Equal(expectMuted, sb.GetBus(2).GetSendFromChannel(1).Muted);
     }
 
     [Fact]

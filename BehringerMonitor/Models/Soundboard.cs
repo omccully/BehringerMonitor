@@ -20,7 +20,8 @@ public class Soundboard
         _buses = Enumerable.Range(1, 16)
             .Select(busNum => new Bus()
             {
-                BusNumber = busNum
+                BusNumber = busNum,
+                SoundBoard = this,
             }).ToList();
     }
 
