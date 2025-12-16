@@ -4,9 +4,8 @@ using System.Text;
 
 namespace BehringerMonitor.Models
 {
-    public class ChannelSend
+    public class ChannelSend : ISoundElement
     {
-
         public required int Id { get; init; }
 
         public bool Muted { get; set; }

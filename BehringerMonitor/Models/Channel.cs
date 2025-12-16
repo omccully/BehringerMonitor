@@ -5,7 +5,7 @@ using System.Threading.Channels;
 
 namespace BehringerMonitor.Models;
 
-public class Channel
+public class Channel : ISoundElement
 {
     public Channel()
     {
@@ -27,6 +27,8 @@ public class Channel
             field = value;
         }
     }
+
+    public float Level => Fader;
 
     public bool Muted { get; set; }
 

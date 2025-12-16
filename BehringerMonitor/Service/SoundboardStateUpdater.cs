@@ -358,7 +358,7 @@ namespace BehringerMonitor.Service
         [GeneratedRegex(@"^/ch/(\d+)/mix/on$")]
         private static partial Regex ChannelOnRegex();
 
-        [GeneratedRegex(@"^/ch/(\d+)/mix/(\d+)/on")]
+        [GeneratedRegex(@"^/ch/(\d+)/mix/(\d+)/on$")]
         private static partial Regex SendOnRegex();
 
         [GeneratedRegex(@"^/ch/(\d+)/mix/(\d+)/level$")]

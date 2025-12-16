@@ -5,7 +5,7 @@ using System.Text;
 
 namespace BehringerMonitor.Models
 {
-    public class Bus
+    public class Bus : ISoundElement
     {
         public required Soundboard SoundBoard { get; init; }
 
