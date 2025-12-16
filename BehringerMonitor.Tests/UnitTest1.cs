@@ -1,5 +1,6 @@
 ﻿using BehringerMonitor.Models;
 using BehringerMonitor.Service;
+using System.Security.Cryptography;
 
 namespace BehringerMonitor.Tests;
 
@@ -143,5 +144,29 @@ public class UnitTest1
         updater.Update(new byte[] { 47, 99, 104, 47, 48, 49, 47, 109, 105, 120, 47, 48, 50, 47, 111, 110, 0, 0, 0, 0, 44, 105, 0, 0, 0, 0, 0, val });
 
         Assert.Equal(expectMuted, sb.GetChannel(1).GetSend(2).Muted);
+    }
+
+    [Fact]
+    public void SoundBoardUpdater_MixLevel()
+    {
+        byte[] bytes = new byte[] { 47, 98, 117, 115, 47, 48, 52, 47, 109, 105, 120, 47, 102, 97, 100, 101, 114, 0, 0, 0, 44, 102, 0, 0, 63, 63, 242, 229 };
+        var sb = new Soundboard();
+        var updater = new SoundboardStateUpdater(sb);
+        updater.Update(bytes);
+        Bus bus = sb.GetBus(4);
+        Assert.Equal(0.7498, bus.Level, 0.001);
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void SoundBoardUpdater_Muted(bool muted)
+    {
+        byte[] bytes = { 47, 98, 117, 115, 47, 48, 56, 47, 109, 105, 120, 47, 111, 110, 0, 0, 44, 105, 0, 0, 0, 0, 0, muted ? (byte)0 : (byte)1 };
+        var sb = new Soundboard();
+        var updater = new SoundboardStateUpdater(sb);
+        updater.Update(bytes);
+        Bus bus = sb.GetBus(8);
+        Assert.Equal(muted, bus.Muted);
     }
 }

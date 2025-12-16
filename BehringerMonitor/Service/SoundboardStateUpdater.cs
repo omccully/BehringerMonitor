@@ -124,7 +124,7 @@ namespace BehringerMonitor.Service
                             case 1:
                                 return true;
                             default:
-                                Console.WriteLine($"Invalid on value: {onVal}");
+                                Debug.WriteLine($"Invalid on value: {onVal}");
                                 return null;
                         }
                     }
@@ -133,10 +133,10 @@ namespace BehringerMonitor.Service
 
                     if (channelFaderMatch.Success)
                     {
-                        Console.WriteLine(str);
+                        Debug.WriteLine(str);
 
                         string debug = string.Join(",", buffer.Skip(i));
-                        Console.WriteLine(debug);
+                        Debug.WriteLine(debug);
 
                         float? parseFloat = ReadFloat();
                         if (!parseFloat.HasValue)
@@ -149,7 +149,7 @@ namespace BehringerMonitor.Service
 
                         if (ch == null)
                         {
-                            Console.WriteLine($"Invalid channel: {channelNum}");
+                            Debug.WriteLine($"Invalid channel: {channelNum}");
                         }
                         else
                         {
@@ -175,7 +175,7 @@ namespace BehringerMonitor.Service
                         Channel? ch = _soundBoard.TryGetChannel(channelNum);
                         if (ch == null)
                         {
-                            Console.WriteLine($"Invalid channel: {channelNum}");
+                            Debug.WriteLine($"Invalid channel: {channelNum}");
                         }
                         else
                         {
@@ -203,7 +203,7 @@ namespace BehringerMonitor.Service
 
                         if (ch == null)
                         {
-                            Console.WriteLine($"Invalid channel: {channelNum}");
+                            Debug.WriteLine($"Invalid channel: {channelNum}");
                         }
                         else
                         {
@@ -215,7 +215,7 @@ namespace BehringerMonitor.Service
                             }
                             else
                             {
-                                Console.WriteLine($"Invalid channel send: level={busNum}");
+                                Debug.WriteLine($"Invalid channel send: level={busNum}");
                             }
                         }
 
@@ -240,7 +240,7 @@ namespace BehringerMonitor.Service
 
                         if (ch == null)
                         {
-                            Console.WriteLine($"Invalid channel: {channelNum}");
+                            Debug.WriteLine($"Invalid channel: {channelNum}");
                         }
                         else
                         {
@@ -252,8 +252,56 @@ namespace BehringerMonitor.Service
                             }
                             else
                             {
-                                Console.WriteLine($"Invalid channel send: {busNum}");
+                                Debug.WriteLine($"Invalid channel send: {busNum}");
                             }
+                        }
+
+                        FinishedMessage();
+                    }
+
+                    var busLevelMatch = BusLevelRegex().Match(str);
+                    if (busLevelMatch.Success)
+                    {
+                        int busNum = int.Parse(busLevelMatch.Groups[1].Value);
+
+                        float? parseFloat = ReadFloat();
+                        if (!parseFloat.HasValue)
+                        {
+                            return;
+                        }
+
+                        Bus? bus = _soundBoard.TryGetBus(busNum);
+                        if(bus == null)
+                        {
+                            Debug.WriteLine($"Invalid bus: {busNum}");
+                        }
+                        else
+                        {
+                            bus.Level = parseFloat.Value;
+                        }
+
+                        FinishedMessage();
+                    }
+
+                    var busOnMatch = BusOnRegex().Match(str);
+                    if (busOnMatch.Success)
+                    {
+                        int busNum = int.Parse(busOnMatch.Groups[1].Value);
+
+                        bool? parseBool = ReadBool();
+                        if(!parseBool.HasValue)
+                        {
+                            return;
+                        }
+
+                        Bus? bus = _soundBoard.TryGetBus(busNum);
+                        if (bus == null)
+                        {
+                            Debug.WriteLine($"Invalid bus: {busNum}");
+                        }
+                        else
+                        {
+                            bus.Muted = !parseBool.Value;
                         }
 
                         FinishedMessage();
@@ -315,5 +363,11 @@ namespace BehringerMonitor.Service
 
         [GeneratedRegex(@"^/ch/(\d+)/mix/(\d+)/level$")]
         private static partial Regex SendLevelRegex();
+
+        [GeneratedRegex(@"^/bus/(\d+)/mix/fader$")]
+        private static partial Regex BusLevelRegex();
+
+        [GeneratedRegex(@"^/bus/(\d+)/mix/on$")]
+        private static partial Regex BusOnRegex();
     }
 }

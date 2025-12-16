@@ -7,6 +7,7 @@ namespace BehringerMonitor.Models;
 public class Soundboard
 {
     private readonly IReadOnlyList<Channel> _channels;
+    private readonly IReadOnlyList<Bus> _buses;
 
     public Soundboard()
     {
@@ -14,6 +15,12 @@ public class Soundboard
             .Select(channelNum => new Channel()
             {
                 ChannelNumber = channelNum
+            }).ToList();
+
+        _buses = Enumerable.Range(1, 16)
+            .Select(busNum => new Bus()
+            {
+                BusNumber = busNum
             }).ToList();
     }
 
@@ -29,5 +36,19 @@ public class Soundboard
     public Channel GetChannel(int channelNum)
     {
         return TryGetChannel(channelNum) ?? throw new Exception("Invalid Channel");
+    }
+
+    public Bus? TryGetBus(int busNum)
+    {
+        if (busNum > _buses.Count || busNum <= 0)
+        {
+            return null;
+        }
+        return _buses[busNum - 1];
+    }
+
+    public Bus GetBus(int busNum)
+    {
+        return TryGetBus(busNum) ?? throw new Exception("Invalid bus");
     }
 }
