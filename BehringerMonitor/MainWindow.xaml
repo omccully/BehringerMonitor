@@ -5,33 +5,112 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BehringerMonitor"
         xmlns:viewmodels="clr-namespace:BehringerMonitor.ViewModels"
+        xmlns:rules="clr-namespace:BehringerMonitor.Rules"
         mc:Ignorable="d"
         Title="Behringer Monitor" Height="450" Width="800">
-    <StackPanel>
-    <ItemsControl ItemsSource="{Binding Warnings}">
-      <ItemsControl.ItemTemplate>
-        <DataTemplate>
-          <Grid>
-            <StackPanel>
-              <TextBlock Margin="3,3,3,0" 
-                         FontSize="15"
-                         FontWeight="Bold"
-                     Text="{Binding Path=Text}">
-                <TextBlock.Style>
-                  <Style TargetType="TextBlock">
-                    <Setter Property="Foreground" Value="Orange" />
-                    <Style.Triggers>
-                      <DataTrigger Binding="{Binding Level}" Value="{x:Static viewmodels:SoundBoardWarningLevel.Critical}">
-                        <Setter Property="Foreground" Value="Red" />
-                      </DataTrigger>
-                    </Style.Triggers>
-                  </Style>
-                </TextBlock.Style>
-              </TextBlock>
-            </StackPanel>
-          </Grid>
-        </DataTemplate>
-      </ItemsControl.ItemTemplate>
-    </ItemsControl>
-  </StackPanel>
+  <Window.Resources>
+    <DataTemplate DataType="{x:Type rules:RuleSelector}">
+      <StackPanel Orientation="Horizontal">
+        <ComboBox
+            ItemsSource="{x:Static viewmodels:SettingsTabViewModel.BaseRuleTypes}"
+            SelectedItem="{Binding RuleType}"
+            MinWidth="100"
+            Text="Rule Type" />
+        <ContentControl Content="{Binding Rule}"/>
+      </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type rules:SoundElementRule}">
+      <StackPanel Orientation="Horizontal">
+        <ContentControl Content="{Binding SoundElementMatcher}"/>
+      </StackPanel>
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type rules:MultiSoundElementMatcher}">
+      <StackPanel Orientation="Horizontal">
+        <TextBlock>Included Ranges:</TextBlock>
+
+        <ItemsControl ItemsSource="{Binding IncludedRanges}">
+          
+        </ItemsControl>
+        
+        <TextBlock>Excluded Ranges:</TextBlock>
+
+        <ItemsControl ItemsSource="{Binding ExcludedRanges}">
+
+        </ItemsControl>
+      </StackPanel>
+      
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type rules:SoundElementRangeMatcher}">
+      <StackPanel Orientation="Horizontal">
+        <TextBlock>Channel Range:</TextBlock>
+
+        <ContentControl Content="{Binding ChannelRange}"/>
+        <TextBlock>Excluded Ranges:</TextBlock>
+
+        <ContentControl Content="{Binding BusRange}"/>
+      </StackPanel>
+
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type rules:SoundElementRange}">
+      <StackPanel Orientation="Horizontal">
+        <TextBox Text="{Binding Start}">
+
+        </TextBox>
+        <TextBlock>to</TextBlock>
+        <TextBox Text="{Binding End}">
+
+        </TextBox>
+      </StackPanel>
+    </DataTemplate>
+  </Window.Resources>
+  <TabControl>
+    <TabItem Header="Settings" DataContext="{Binding SettingsTab}">
+      <DockPanel>
+        <Button Command="{Binding SaveCommand}" DockPanel.Dock="Bottom">Save</Button>
+        <StackPanel>
+          <StackPanel Orientation="Horizontal">
+            <TextBlock>X32 IP Address</TextBlock>
+            <TextBox Width="200" />
+          </StackPanel>
+
+          <ItemsControl ItemsSource="{Binding Rules}">
+          </ItemsControl>
+        </StackPanel>
+      </DockPanel>
+      
+    </TabItem>
+    <TabItem Header="Alerts">
+      <StackPanel>
+        <ItemsControl ItemsSource="{Binding Warnings}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate>
+              <Grid>
+                <StackPanel>
+                  <TextBlock Margin="3,3,3,0" 
+                        FontSize="15"
+                        FontWeight="Bold"
+                    Text="{Binding Path=Text}">
+                    <TextBlock.Style>
+                      <Style TargetType="TextBlock">
+                        <Setter Property="Foreground" Value="Orange" />
+                        <Style.Triggers>
+                          <DataTrigger Binding="{Binding Level}" Value="{x:Static viewmodels:SoundBoardWarningLevel.Critical}">
+                            <Setter Property="Foreground" Value="Red" />
+                          </DataTrigger>
+                        </Style.Triggers>
+                      </Style>
+                    </TextBlock.Style>
+                  </TextBlock>
+                </StackPanel>
+              </Grid>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </StackPanel>
+    </TabItem>
+  </TabControl>
+ 
 </Window>

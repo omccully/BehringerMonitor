@@ -1,8 +1,6 @@
 ﻿using BehringerMonitor.Models;
 using BehringerMonitor.Service;
 using BehringerMonitor.ViewModels;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Net.Sockets;
 using System.Text;
@@ -12,27 +10,51 @@ namespace BehringerMonitor
 {
     public class MainWindowViewModel : INotifyPropertyChanged
     {
+        private const int BehringerPort = 10023;
+
         private SoundboardStateUpdater _updater;
-        private UdpClient _udpClient;
+        private UdpClient? _udpClient;
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
         public Soundboard Soundboard { get; }
 
+        public SettingsTabViewModel SettingsTab { get; }
+
         public MainWindowViewModel()
         {
+            SettingsTab = new();
+            SettingsTab.SettingsChanged += SettingsTab_SettingsChanged;
+
             Debug = new MyCommand(this);
             Soundboard = new Soundboard();
             _updater = new SoundboardStateUpdater(Soundboard);
-            _udpClient = new UdpClient("10.0.0.120", 10023);
 
+            Warnings = new List<SoundBoardWarning>();
             Result = string.Empty;
 
-            _ = Task.Run(() => ReadLoop());
-            _ = Initialize();
+            InitializeUdpClientIfNot();
         }
 
-        public string Result 
+        private void SettingsTab_SettingsChanged(object? sender, SettingsChangedEventArgs e)
+        {
+            // if IP address was entered and saved for the first time, it will start up
+            InitializeUdpClientIfNot();
+        }
+
+        private void InitializeUdpClientIfNot()
+        {
+            string? ipAddress = SettingsTab.Settings.IpAddress;
+            if (!string.IsNullOrWhiteSpace(ipAddress))
+            {
+                _udpClient = new UdpClient(ipAddress, BehringerPort);
+
+                _ = Task.Run(() => ReadLoop());
+                _ = Initialize();
+            }
+        }
+
+        public string Result
         {
             get
             {
@@ -45,8 +67,8 @@ namespace BehringerMonitor
             }
         }
 
-        public IReadOnlyList<SoundBoardWarning> Warnings 
-        { 
+        public IReadOnlyList<SoundBoardWarning> Warnings
+        {
             get
             {
                 return field;
@@ -56,9 +78,9 @@ namespace BehringerMonitor
                 field = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Warnings)));
             }
-        } 
+        }
 
-        public ICommand Debug { get; } 
+        public ICommand Debug { get; }
 
         class MyCommand : ICommand
         {
@@ -78,7 +100,7 @@ namespace BehringerMonitor
 
             public void Execute(object? parameter)
             {
-                
+
             }
         }
 
@@ -111,11 +133,11 @@ namespace BehringerMonitor
 
                 List<SoundBoardWarning> warnings = new();
                 StringBuilder errors = new StringBuilder();
-                for(int ch = 1; ch <= 32; ch++)
+                for (int ch = 1; ch <= 32; ch++)
                 {
                     Channel channel = Soundboard.GetChannel(ch);
                     ChannelSend send = channel.GetSend(8);
-                    
+
                     if (send.Muted)
                     {
                         warnings.Add(new SoundBoardWarning()
@@ -140,7 +162,7 @@ namespace BehringerMonitor
                 Warnings = warnings;
                 Result = errors.ToString();
             }
-            
+
         }
 
         private static byte[] EncodeOscString(string str)

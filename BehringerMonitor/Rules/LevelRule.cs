@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace BehringerMonitor.Rules
+﻿namespace BehringerMonitor.Rules
 {
-    class LevelRule
+    public class LevelRule
     {
+        public required LevelOperator Operator { get; set; }
 
-
+        public required float Level { get; set; }
     }
 }
