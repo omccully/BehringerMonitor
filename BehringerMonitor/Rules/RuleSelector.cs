@@ -1,6 +1,8 @@
-﻿namespace BehringerMonitor.Rules
+﻿using BehringerMonitor.ViewModels;
+
+namespace BehringerMonitor.Rules
 {
-    public class RuleSelector
+    public class RuleSelector : ViewModelBase
     {
         public Type? RuleType
         {
@@ -19,6 +21,14 @@
             }
         }
 
-        public RuleBase? Rule { get; set; }
+        public RuleBase? Rule
+        {
+            get => field;
+            set
+            {
+                field = value;
+                NotifyPropertyChanged();
+            }
+        }
     }
 }

@@ -26,6 +26,9 @@ namespace BehringerMonitor.ViewModels
             Rules = new()
             {
                 new RuleSelector()
+                {
+                    RuleType = typeof(SoundElementRule),
+                }
             };
         }
 

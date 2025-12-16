@@ -5,17 +5,25 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BehringerMonitor"
         xmlns:viewmodels="clr-namespace:BehringerMonitor.ViewModels"
+        xmlns:conveters="clr-namespace:BehringerMonitor.Converters"
         xmlns:rules="clr-namespace:BehringerMonitor.Rules"
         mc:Ignorable="d"
         Title="Behringer Monitor" Height="450" Width="800">
   <Window.Resources>
+    <conveters:TypeToNameConverter x:Key="TypeToNameConverter"/>
     <DataTemplate DataType="{x:Type rules:RuleSelector}">
       <StackPanel Orientation="Horizontal">
         <ComboBox
             ItemsSource="{x:Static viewmodels:SettingsTabViewModel.BaseRuleTypes}"
             SelectedItem="{Binding RuleType}"
             MinWidth="100"
-            Text="Rule Type" />
+            Text="Rule Type">
+          <ComboBox.ItemTemplate>
+            <DataTemplate>
+              <TextBlock Text="{Binding Converter={StaticResource TypeToNameConverter}}"/>
+            </DataTemplate>
+          </ComboBox.ItemTemplate>
+        </ComboBox>
         <ContentControl Content="{Binding Rule}"/>
       </StackPanel>
     </DataTemplate>
@@ -27,31 +35,62 @@
     </DataTemplate>
     <DataTemplate DataType="{x:Type rules:MultiSoundElementMatcher}">
       <StackPanel Orientation="Horizontal">
-        <TextBlock>Included Ranges:</TextBlock>
+        <Border BorderThickness="1" BorderBrush="Black">
+          <StackPanel Orientation="Horizontal">
+            <TextBlock>Included Ranges:</TextBlock>
 
-        <ItemsControl ItemsSource="{Binding IncludedRanges}">
-          
-        </ItemsControl>
+            <ItemsControl ItemsSource="{Binding IncludedRanges}">
+            </ItemsControl>
+          </StackPanel>
+        </Border>
+
+        <Border BorderThickness="1" BorderBrush="Black">
+          <StackPanel Orientation="Horizontal">
+            <TextBlock>Excluded Ranges:</TextBlock>
+
+            <ItemsControl ItemsSource="{Binding ExcludedRanges}">
+
+            </ItemsControl>
+          </StackPanel>
+        </Border>
         
-        <TextBlock>Excluded Ranges:</TextBlock>
-
-        <ItemsControl ItemsSource="{Binding ExcludedRanges}">
-
-        </ItemsControl>
       </StackPanel>
       
     </DataTemplate>
 
     <DataTemplate DataType="{x:Type rules:SoundElementRangeMatcher}">
-      <StackPanel Orientation="Horizontal">
-        <TextBlock>Channel Range:</TextBlock>
+      <Border BorderThickness="1" BorderBrush="Orange">
+        <StackPanel Orientation="Horizontal">
+          <TextBlock>Channel Range:</TextBlock>
+          <ContentControl Content="{Binding ChannelRange}">
+            <ContentControl.Style>
+              <Style TargetType="ContentControl">
+                <!--<Setter Property="ContentTemplate">
+                  <Setter.Value>
 
-        <ContentControl Content="{Binding ChannelRange}"/>
-        <TextBlock>Excluded Ranges:</TextBlock>
+                  </Setter.Value>
+                </Setter>-->
+                <Style.Triggers>
+                  <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Path=Content}" 
+                                 Value="{x:Null}">
+                    <Setter Property="ContentTemplate">
+                      <Setter.Value>
+                        <DataTemplate>
+                          <CheckBox Checked="{Binding UseChannelRange, 
+                                                                    RelativeSource={RelativeSource AncestorType={x:Type ContentControl}}}"></CheckBox>
+                        </DataTemplate>
+                      </Setter.Value>
+                    </Setter>
+                  </DataTrigger>
+                </Style.Triggers>
+              </Style>
+            </ContentControl.Style>
+          </ContentControl>
 
-        <ContentControl Content="{Binding BusRange}"/>
-      </StackPanel>
-
+          <TextBlock>Bus Range:</TextBlock>
+          <ContentControl Content="{Binding BusRange}"/>
+        </StackPanel>
+      </Border>
     </DataTemplate>
 
     <DataTemplate DataType="{x:Type rules:SoundElementRange}">

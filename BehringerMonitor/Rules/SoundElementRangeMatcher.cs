@@ -1,4 +1,6 @@
-﻿namespace BehringerMonitor.Rules
+﻿using BehringerMonitor.ViewModels;
+
+namespace BehringerMonitor.Rules
 {
     /// <summary>
     /// If only ChannelRange is set, then it represents a channel range
@@ -7,10 +9,20 @@
     /// Ex: ChannelRange 2-3 and BusRange 6-7 represents the
     /// 4 total sends between those channels and buses.
     /// </summary>
-    public class SoundElementRangeMatcher
+    public class SoundElementRangeMatcher : ViewModelBase
     {
-        public required SoundElementRange? ChannelRange { get; init; }
+        public SoundElementRange? ChannelRange { get; set; }
 
-        public required SoundElementRange? BusRange { get; init; }
+        public SoundElementRange? BusRange { get; set; }
+
+        public bool UseChannelRange
+        {
+            get => field;
+            set
+            {
+                field = value;
+                NotifyPropertyChanged();
+            }
+        }
     }
 }
