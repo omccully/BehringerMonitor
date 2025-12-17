@@ -11,18 +11,48 @@ namespace BehringerMonitor.Rules
     /// </summary>
     public class SoundElementRangeMatcher : ViewModelBase
     {
-        public SoundElementRange? ChannelRange { get; set; }
+        public SoundElementRangeToggle ChannelRange { get; set; } = new();
 
-        public SoundElementRange? BusRange { get; set; }
+        public SoundElementRangeToggle BusRange { get; set; } = new();
 
-        public bool UseChannelRange
-        {
-            get => field;
-            set
-            {
-                field = value;
-                NotifyPropertyChanged();
-            }
-        }
+
+
+        //public SoundElementRange? ChannelRange
+        //{
+        //    get => field;
+        //    set
+        //    {
+        //        field = value;
+        //        NotifyPropertyChanged();
+        //    }
+        //}
+
+        //public SoundElementRange? BusRange
+        //{
+        //    get => field;
+        //    set
+        //    {
+        //        field = value;
+        //        NotifyPropertyChanged();
+        //    }
+        //}
+
+        //public bool UseChannelRange
+        //{
+        //    get => ChannelRange != null;
+        //    set
+        //    {
+        //        if (value && ChannelRange == null)
+        //        {
+        //            ChannelRange = new SoundElementRange();
+        //        }
+        //        else if (!value && ChannelRange != null)
+        //        {
+        //            ChannelRange = null;
+        //        }
+
+        //        NotifyPropertyChanged();
+        //    }
+        //}
     }
 }

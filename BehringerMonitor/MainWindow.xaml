@@ -34,7 +34,7 @@
       </StackPanel>
     </DataTemplate>
     <DataTemplate DataType="{x:Type rules:MultiSoundElementMatcher}">
-      <StackPanel Orientation="Horizontal">
+      <StackPanel Orientation="Vertical">
         <Border BorderThickness="1" BorderBrush="Black">
           <StackPanel Orientation="Horizontal">
             <TextBlock>Included Ranges:</TextBlock>
@@ -62,30 +62,7 @@
       <Border BorderThickness="1" BorderBrush="Orange">
         <StackPanel Orientation="Horizontal">
           <TextBlock>Channel Range:</TextBlock>
-          <ContentControl Content="{Binding ChannelRange}">
-            <ContentControl.Style>
-              <Style TargetType="ContentControl">
-                <!--<Setter Property="ContentTemplate">
-                  <Setter.Value>
-
-                  </Setter.Value>
-                </Setter>-->
-                <Style.Triggers>
-                  <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Path=Content}" 
-                                 Value="{x:Null}">
-                    <Setter Property="ContentTemplate">
-                      <Setter.Value>
-                        <DataTemplate>
-                          <CheckBox Checked="{Binding UseChannelRange, 
-                                                                    RelativeSource={RelativeSource AncestorType={x:Type ContentControl}}}"></CheckBox>
-                        </DataTemplate>
-                      </Setter.Value>
-                    </Setter>
-                  </DataTrigger>
-                </Style.Triggers>
-              </Style>
-            </ContentControl.Style>
-          </ContentControl>
+          <ContentControl Content="{Binding ChannelRange}" />
 
           <TextBlock>Bus Range:</TextBlock>
           <ContentControl Content="{Binding BusRange}"/>
@@ -93,13 +70,43 @@
       </Border>
     </DataTemplate>
 
+    <DataTemplate DataType="{x:Type rules:SoundElementRangeToggle}">
+      <StackPanel Orientation="Horizontal">
+        <CheckBox IsChecked="{Binding EnableRange, Mode=TwoWay}"></CheckBox>
+        
+        <ContentControl Content="{Binding Range}">
+          <ContentControl.Style>
+            <Style TargetType="ContentControl">
+              <Style.Triggers>
+                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Path=Content}" 
+                       Value="{x:Null}">
+                  <Setter Property="ContentTemplate">
+                    <Setter.Value>
+                      <DataTemplate>
+                        <StackPanel>
+                          
+                        </StackPanel>
+                      </DataTemplate>
+                    </Setter.Value>
+                  </Setter>
+                </DataTrigger>
+              </Style.Triggers>
+            </Style>
+          </ContentControl.Style>
+        </ContentControl>
+
+      </StackPanel>
+      
+      
+    </DataTemplate>
+
     <DataTemplate DataType="{x:Type rules:SoundElementRange}">
       <StackPanel Orientation="Horizontal">
-        <TextBox Text="{Binding Start}">
+        <TextBox Text="{Binding Start}" MinWidth="50">
 
         </TextBox>
         <TextBlock>to</TextBlock>
-        <TextBox Text="{Binding End}">
+        <TextBox Text="{Binding End}" MinWidth="50">
 
         </TextBox>
       </StackPanel>
@@ -117,6 +124,7 @@
 
           <ItemsControl ItemsSource="{Binding Rules}">
           </ItemsControl>
+          <Button Command="{Binding AddRuleCommand}">Add Rule</Button>
         </StackPanel>
       </DockPanel>
       
