@@ -54,7 +54,7 @@
     <DataTemplate DataType="{x:Type rules:LevelRule}">
       <StackPanel Orientation="Horizontal">
         <TextBlock>Operator:</TextBlock>
-        <ComboBox ItemsSource="{x:Static rules:LevelRule.OperatorOptions}"></ComboBox>
+        <ComboBox ItemsSource="{x:Static rules:LevelRule.OperatorOptions}" SelectedValue="{Binding Operator, Mode=TwoWay}"></ComboBox>
         <TextBlock>Level:</TextBlock>
         <TextBox Text="{Binding Level}" MinWidth="50"></TextBox>
       </StackPanel>
@@ -159,7 +159,7 @@
           
           <StackPanel Orientation="Horizontal">
             <TextBlock>X32 IP Address</TextBlock>
-            <TextBox Width="200" />
+            <TextBox Width="200" Text="{Binding IpAddress, Mode=TwoWay}" />
           </StackPanel>
 
           <ItemsControl ItemsSource="{Binding Rules}">

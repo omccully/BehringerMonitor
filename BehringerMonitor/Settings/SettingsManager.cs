@@ -32,7 +32,10 @@ namespace BehringerMonitor.Settings
                 SettingsHelper.SettingsFolderPath,
                 "Settings-" + DateTime.Now.ToString("yyyyMMddTHHmmss") + ".json");
 
-            string jsonText = JsonSerializer.Serialize(settings);
+            string jsonText = JsonSerializer.Serialize(settings, new JsonSerializerOptions()
+            {
+                WriteIndented = true,
+            });
 
             File.WriteAllText(settingsFilePath, jsonText);
         }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Text.Json.Serialization;
 using System.Windows.Input;
 
 namespace BehringerMonitor.Rules
@@ -18,8 +19,10 @@ namespace BehringerMonitor.Rules
 
         public ObservableCollection<SoundElementRangeMatcher> ExcludedRanges { get; set; } = new();
 
+        [JsonIgnore]
         public ICommand AddIncludedRangeCommand { get; }
 
+        [JsonIgnore]
         public ICommand AddExcludedRangeCommand { get; }
 
         public override bool HasEffect => IncludedRanges.Any(r => r.HasEffect);
