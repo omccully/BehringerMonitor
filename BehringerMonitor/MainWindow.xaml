@@ -32,6 +32,35 @@
     <DataTemplate DataType="{x:Type rules:SoundElementRule}">
       <StackPanel Orientation="Horizontal">
         <ContentControl Content="{Binding SoundElementMatcher}"/>
+        <StackPanel Orientation="Vertical">
+          <StackPanel Orientation="Horizontal">
+            <TextBlock>Level Rule:</TextBlock>
+            <CheckBox IsChecked="{Binding LevelRuleEnabled}">
+            </CheckBox>
+            <ContentControl Content="{Binding LevelRule}"></ContentControl>
+
+          </StackPanel>
+          <StackPanel Orientation="Horizontal">
+            <TextBlock>Mute Rule:</TextBlock>
+            <CheckBox IsChecked="{Binding MuteRuleEnabled}">
+            </CheckBox>
+            <ContentControl Content="{Binding MuteRule}"></ContentControl>
+          </StackPanel>
+        </StackPanel>
+      </StackPanel>
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type rules:LevelRule}">
+      <StackPanel Orientation="Horizontal">
+        <TextBlock>Operator:</TextBlock>
+        <ComboBox ItemsSource="{x:Static rules:LevelRule.OperatorOptions}"></ComboBox>
+        <TextBlock>Level:</TextBlock>
+        <TextBox Text="{Binding Level}" MinWidth="50"></TextBox>
+      </StackPanel>
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type rules:MuteRule}">
+      <StackPanel Orientation="Horizontal">
+        <TextBlock>Expect Muted:</TextBlock>
+        <CheckBox IsChecked="{Binding ExpectedMuted}"></CheckBox>
       </StackPanel>
     </DataTemplate>
     <DataTemplate DataType="{x:Type rules:MultiSoundElementMatcher}">
@@ -76,7 +105,7 @@
         <CheckBox IsChecked="{Binding EnableRange, Mode=TwoWay}"></CheckBox>
         
         <ContentControl Content="{Binding Range}">
-          <ContentControl.Style>
+          <!--<ContentControl.Style>
             <Style TargetType="ContentControl">
               <Style.Triggers>
                 <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Path=Content}" 
@@ -93,7 +122,7 @@
                 </DataTrigger>
               </Style.Triggers>
             </Style>
-          </ContentControl.Style>
+          </ContentControl.Style>-->
         </ContentControl>
 
       </StackPanel>

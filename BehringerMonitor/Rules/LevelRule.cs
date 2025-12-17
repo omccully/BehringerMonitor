@@ -2,8 +2,10 @@
 {
     public class LevelRule
     {
-        public required LevelOperator Operator { get; set; }
+        public LevelOperator? Operator { get; set; }
 
-        public required float Level { get; set; }
+        public float Level { get; set; }
+
+        public static IReadOnlyList<LevelOperator> OperatorOptions = Enum.GetValues<LevelOperator>();
     }
 }

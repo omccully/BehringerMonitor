@@ -2,6 +2,6 @@
 {
     public class MuteRule
     {
-        public required bool ExpectedMuted { get; set; }
+        public bool? ExpectedMuted { get; set; }
     }
 }
