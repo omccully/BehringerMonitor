@@ -1,9 +1,11 @@
 ﻿using BehringerMonitor.ViewModels;
+using System.Text.Json.Serialization;
 
 namespace BehringerMonitor.Rules
 {
     public class RuleSelector : ViewModelBase
     {
+        [JsonIgnore]
         public Type? RuleType
         {
             get => field;
@@ -30,5 +32,8 @@ namespace BehringerMonitor.Rules
                 NotifyPropertyChanged();
             }
         }
+
+        [JsonIgnore]
+        public bool HasEffect => Rule != null;
     }
 }

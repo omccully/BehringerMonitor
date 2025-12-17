@@ -7,6 +7,7 @@ namespace BehringerMonitor.ViewModels
 {
     public class SettingsTabViewModel
     {
+        private ISettingsManager _settingsManager;
 
         public static IReadOnlyList<Type> BaseRuleTypes = new List<Type>()
         {
@@ -14,15 +15,16 @@ namespace BehringerMonitor.ViewModels
         };
         public event EventHandler<SettingsChangedEventArgs>? SettingsChanged;
 
-        public BehringerMonitorSettings Settings { get; }
+        public BehringerMonitorSettings Settings { get; private set; }
 
         public ObservableCollection<RuleSelector> Rules { get; }
 
-        public SettingsTabViewModel()
+        public SettingsTabViewModel(ISettingsManager settingsManager)
         {
             SaveCommand = new RelayCommand(Save);
             AddRuleCommand = new RelayCommand(AddRule);
-            Settings = SettingsHelper.ReadSettings() ?? new BehringerMonitorSettings();
+            _settingsManager = settingsManager;
+            Settings = _settingsManager.ReadSettings() ?? new BehringerMonitorSettings();
             Rules = new()
             {
                 new RuleSelector()
@@ -30,6 +32,8 @@ namespace BehringerMonitor.ViewModels
                     RuleType = typeof(SoundElementRule),
                 }
             };
+            IpAddress = Settings.IpAddress ?? string.Empty;
+            _settingsManager = settingsManager;
         }
 
         public ICommand SaveCommand { get; }
@@ -40,8 +44,16 @@ namespace BehringerMonitor.ViewModels
 
         private void Save()
         {
-            SettingsHelper.SaveSettings(Settings);
-            SettingsChanged?.Invoke(this, new SettingsChangedEventArgs(Settings));
+            var newSettings = new BehringerMonitorSettings()
+            {
+                IpAddress = IpAddress,
+                Rules = Rules.Where(r => r.HasEffect).ToList(),
+            };
+
+            _settingsManager.SaveSettings(newSettings);
+
+            Settings = newSettings;
+            SettingsChanged?.Invoke(this, new SettingsChangedEventArgs(newSettings));
         }
 
         private void AddRule()

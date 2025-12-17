@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using System.Text.Json;
 
 namespace BehringerMonitor.Settings
 {
@@ -12,33 +11,35 @@ namespace BehringerMonitor.Settings
                 return Path.Combine(temp, "BehingerMonitor", "Settings.json");
             });
 
-        public static BehringerMonitorSettings? ReadSettings()
-        {
-            string settingsFilePath = _settingsFilePath.Value;
+        public static string SettingsFilePath => _settingsFilePath.Value;
 
-            if (!File.Exists(settingsFilePath))
-            {
-                return null;
-            }
+        //public static BehringerMonitorSettings? ReadSettings()
+        //{
+        //    string settingsFilePath = _settingsFilePath.Value;
 
-            string jsonText = File.ReadAllText(settingsFilePath);
-            var result = JsonSerializer.Deserialize<BehringerMonitorSettings>(jsonText);
+        //    if (!File.Exists(settingsFilePath))
+        //    {
+        //        return null;
+        //    }
 
-            if (result == null)
-            {
-                throw new Exception("Failed to parse JSON");
-            }
+        //    string jsonText = File.ReadAllText(settingsFilePath);
+        //    var result = JsonSerializer.Deserialize<BehringerMonitorSettings>(jsonText);
 
-            return result;
-        }
+        //    if (result == null)
+        //    {
+        //        throw new Exception("Failed to parse JSON");
+        //    }
 
-        public static void SaveSettings(BehringerMonitorSettings settings)
-        {
-            string settingsFilePath = _settingsFilePath.Value;
+        //    return result;
+        //}
 
-            string jsonText = JsonSerializer.Serialize(settings);
+        //public static void SaveSettings(BehringerMonitorSettings settings)
+        //{
+        //    string settingsFilePath = _settingsFilePath.Value;
 
-            File.WriteAllText(settingsFilePath, jsonText);
-        }
+        //    string jsonText = JsonSerializer.Serialize(settings);
+
+        //    File.WriteAllText(settingsFilePath, jsonText);
+        //}
     }
 }

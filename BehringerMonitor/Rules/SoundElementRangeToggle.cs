@@ -1,4 +1,5 @@
 ﻿using BehringerMonitor.ViewModels;
+using System.Text.Json.Serialization;
 
 namespace BehringerMonitor.Rules
 {
@@ -14,6 +15,7 @@ namespace BehringerMonitor.Rules
             }
         }
 
+        [JsonIgnore]
         public bool EnableRange
         {
             get => Range != null;

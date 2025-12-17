@@ -7,6 +7,7 @@
         xmlns:viewmodels="clr-namespace:BehringerMonitor.ViewModels"
         xmlns:conveters="clr-namespace:BehringerMonitor.Converters"
         xmlns:rules="clr-namespace:BehringerMonitor.Rules"
+        xmlns:settings="clr-namespace:BehringerMonitor.Settings"
         mc:Ignorable="d"
         Title="Behringer Monitor" Height="450" Width="800">
   <Window.Resources>
@@ -117,6 +118,11 @@
       <DockPanel>
         <Button Command="{Binding SaveCommand}" DockPanel.Dock="Bottom">Save</Button>
         <StackPanel>
+          <StackPanel Orientation="Horizontal">
+            <TextBlock>Settings are saved at:</TextBlock>
+            <TextBox IsReadOnly="true" Text="{x:Static settings:SettingsHelper.SettingsFilePath}"></TextBox>
+          </StackPanel>
+          
           <StackPanel Orientation="Horizontal">
             <TextBlock>X32 IP Address</TextBlock>
             <TextBox Width="200" />

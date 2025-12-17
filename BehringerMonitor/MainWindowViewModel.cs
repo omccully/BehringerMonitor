@@ -1,5 +1,6 @@
 ﻿using BehringerMonitor.Models;
 using BehringerMonitor.Service;
+using BehringerMonitor.Settings;
 using BehringerMonitor.ViewModels;
 using System.ComponentModel;
 using System.Net.Sockets;
@@ -23,7 +24,7 @@ namespace BehringerMonitor
 
         public MainWindowViewModel()
         {
-            SettingsTab = new();
+            SettingsTab = new(new SettingsManager());
             SettingsTab.SettingsChanged += SettingsTab_SettingsChanged;
 
             Debug = new MyCommand(this);
