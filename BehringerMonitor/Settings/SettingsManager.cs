@@ -7,14 +7,15 @@ namespace BehringerMonitor.Settings
     {
         public BehringerMonitorSettings? ReadSettings()
         {
-            string settingsFilePath = SettingsHelper.SettingsFilePath;
+            string? latestSettingsFile = Directory.GetFiles(SettingsHelper.SettingsFolderPath)
+                .OrderDescending().FirstOrDefault();
 
-            if (!File.Exists(settingsFilePath))
+            if (latestSettingsFile == null)
             {
                 return null;
             }
 
-            string jsonText = File.ReadAllText(settingsFilePath);
+            string jsonText = File.ReadAllText(latestSettingsFile);
             var result = JsonSerializer.Deserialize<BehringerMonitorSettings>(jsonText);
 
             if (result == null)
@@ -27,7 +28,9 @@ namespace BehringerMonitor.Settings
 
         public void SaveSettings(BehringerMonitorSettings settings)
         {
-            string settingsFilePath = SettingsHelper.SettingsFilePath;
+            string settingsFilePath = Path.Combine(
+                SettingsHelper.SettingsFolderPath,
+                "Settings-" + DateTime.Now.ToString("yyyyMMddTHHmmss") + ".json");
 
             string jsonText = JsonSerializer.Serialize(settings);
 

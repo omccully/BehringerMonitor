@@ -4,14 +4,26 @@ namespace BehringerMonitor.Settings
 {
     public static class SettingsHelper
     {
-        private static Lazy<string> _settingsFilePath = new Lazy<string>(
+        private static Lazy<string> _dataFolderPath = new Lazy<string>(
             () =>
             {
                 string temp = Path.GetTempPath();
-                return Path.Combine(temp, "BehingerMonitor", "Settings.json");
+                string folder = Path.Combine(temp, "BehingerMonitor");
+                Directory.CreateDirectory(folder);
+                return folder;
             });
 
-        public static string SettingsFilePath => _settingsFilePath.Value;
+        public static string DataFolderPath => _dataFolderPath.Value;
+
+        public static string SettingsFolderPath
+        {
+            get
+            {
+                string path = Path.Combine(DataFolderPath, "Settings");
+                Directory.CreateDirectory(path);
+                return path;
+            }
+        }
 
         //public static BehringerMonitorSettings? ReadSettings()
         //{

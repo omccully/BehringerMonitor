@@ -13,20 +13,23 @@
   <Window.Resources>
     <conveters:TypeToNameConverter x:Key="TypeToNameConverter"/>
     <DataTemplate DataType="{x:Type rules:RuleSelector}">
-      <StackPanel Orientation="Horizontal">
-        <ComboBox
-            ItemsSource="{x:Static viewmodels:SettingsTabViewModel.BaseRuleTypes}"
-            SelectedItem="{Binding RuleType}"
-            MinWidth="100"
-            Text="Rule Type">
-          <ComboBox.ItemTemplate>
-            <DataTemplate>
-              <TextBlock Text="{Binding Converter={StaticResource TypeToNameConverter}}"/>
-            </DataTemplate>
-          </ComboBox.ItemTemplate>
-        </ComboBox>
-        <ContentControl Content="{Binding Rule}"/>
-      </StackPanel>
+      <Border BorderBrush="Black" BorderThickness="1,1,1,1" CornerRadius="8,8,8,8" Padding="3,3,3,3"> 
+        <StackPanel Orientation="Horizontal">
+          <ComboBox
+              ItemsSource="{x:Static viewmodels:SettingsTabViewModel.BaseRuleTypes}"
+              SelectedItem="{Binding RuleType}"
+              MinWidth="100"
+              Text="Rule Type">
+            <ComboBox.ItemTemplate>
+              <DataTemplate>
+                <TextBlock Text="{Binding Converter={StaticResource TypeToNameConverter}}"/>
+              </DataTemplate>
+            </ComboBox.ItemTemplate>
+          </ComboBox>
+          <ContentControl Content="{Binding Rule}"/>
+        </StackPanel>
+      </Border>
+      
     </DataTemplate>
 
     <DataTemplate DataType="{x:Type rules:SoundElementRule}">
@@ -38,7 +41,6 @@
             <CheckBox IsChecked="{Binding LevelRuleEnabled}">
             </CheckBox>
             <ContentControl Content="{Binding LevelRule}"></ContentControl>
-
           </StackPanel>
           <StackPanel Orientation="Horizontal">
             <TextBlock>Mute Rule:</TextBlock>
@@ -66,21 +68,24 @@
     <DataTemplate DataType="{x:Type rules:MultiSoundElementMatcher}">
       <StackPanel Orientation="Vertical">
         <Border BorderThickness="1" BorderBrush="Black">
-          <StackPanel Orientation="Horizontal">
+          <StackPanel Orientation="Vertical">
             <TextBlock>Included Ranges:</TextBlock>
 
             <ItemsControl ItemsSource="{Binding IncludedRanges}">
             </ItemsControl>
+
+            <Button Command="{Binding AddIncludedRangeCommand}">Add included range</Button>
           </StackPanel>
         </Border>
 
         <Border BorderThickness="1" BorderBrush="Black">
-          <StackPanel Orientation="Horizontal">
+          <StackPanel Orientation="Vertical">
             <TextBlock>Excluded Ranges:</TextBlock>
 
             <ItemsControl ItemsSource="{Binding ExcludedRanges}">
-
             </ItemsControl>
+
+            <Button Command="{Binding AddExcludedRangeCommand}">Add excluded range</Button>
           </StackPanel>
         </Border>
         
@@ -149,7 +154,7 @@
         <StackPanel>
           <StackPanel Orientation="Horizontal">
             <TextBlock>Settings are saved at:</TextBlock>
-            <TextBox IsReadOnly="true" Text="{x:Static settings:SettingsHelper.SettingsFilePath}"></TextBox>
+            <TextBox IsReadOnly="true" Text="{x:Static settings:SettingsHelper.DataFolderPath}"></TextBox>
           </StackPanel>
           
           <StackPanel Orientation="Horizontal">
