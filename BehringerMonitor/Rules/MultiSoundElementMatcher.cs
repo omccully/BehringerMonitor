@@ -3,7 +3,7 @@ using System.Windows.Input;
 
 namespace BehringerMonitor.Rules
 {
-    public class MultiSoundElementMatcher
+    public class MultiSoundElementMatcher : RuleBase
     {
         public MultiSoundElementMatcher()
         {
@@ -22,6 +22,8 @@ namespace BehringerMonitor.Rules
 
         public ICommand AddExcludedRangeCommand { get; }
 
+        public override bool HasEffect => IncludedRanges.Any(r => r.HasEffect);
+
         private void AddIncludedRange()
         {
             IncludedRanges.Add(new SoundElementRangeMatcher());
@@ -30,6 +32,15 @@ namespace BehringerMonitor.Rules
         private void AddExcludedRange()
         {
             ExcludedRanges.Add(new SoundElementRangeMatcher());
+        }
+
+        public override RuleBase Clone()
+        {
+            return new MultiSoundElementMatcher()
+            {
+                IncludedRanges = new ObservableCollection<SoundElementRangeMatcher>(IncludedRanges.Select(ir => ir.Clone()).Cast<SoundElementRangeMatcher>()),
+                ExcludedRanges = new ObservableCollection<SoundElementRangeMatcher>(ExcludedRanges.Select(ir => ir.Clone()).Cast<SoundElementRangeMatcher>()),
+            };
         }
     }
 }

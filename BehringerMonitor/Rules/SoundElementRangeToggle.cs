@@ -1,9 +1,8 @@
-﻿using BehringerMonitor.ViewModels;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace BehringerMonitor.Rules
 {
-    public class SoundElementRangeToggle : ViewModelBase
+    public class SoundElementRangeToggle : RuleBase
     {
         public SoundElementRange? Range
         {
@@ -32,6 +31,16 @@ namespace BehringerMonitor.Rules
 
                 NotifyPropertyChanged();
             }
+        }
+
+        public override bool HasEffect => Range != null && Range.HasEffect;
+
+        public override RuleBase Clone()
+        {
+            return new SoundElementRangeToggle()
+            {
+                Range = (SoundElementRange?)Range?.Clone(),
+            };
         }
     }
 }

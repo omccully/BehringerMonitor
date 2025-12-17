@@ -1,9 +1,8 @@
-﻿using BehringerMonitor.ViewModels;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace BehringerMonitor.Rules
 {
-    public class RuleSelector : ViewModelBase
+    public class RuleSelector : RuleBase
     {
         [JsonIgnore]
         public Type? RuleType
@@ -34,6 +33,14 @@ namespace BehringerMonitor.Rules
         }
 
         [JsonIgnore]
-        public bool HasEffect => Rule != null;
+        public override bool HasEffect => Rule != null;
+
+        public override RuleBase Clone()
+        {
+            return new RuleSelector()
+            {
+                Rule = Rule?.Clone(),
+            };
+        }
     }
 }

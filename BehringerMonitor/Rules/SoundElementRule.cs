@@ -1,4 +1,6 @@
-﻿namespace BehringerMonitor.Rules
+﻿using System.Text.Json.Serialization;
+
+namespace BehringerMonitor.Rules
 {
     public class SoundElementRule : RuleBase
     {
@@ -6,6 +8,8 @@
         {
             SoundElementMatcher = new MultiSoundElementMatcher();
         }
+
+        public override bool HasEffect => SoundElementMatcher.HasEffect && (LevelRule?.HasEffect == true || MuteRule?.HasEffect == true);
 
         public MultiSoundElementMatcher SoundElementMatcher { get; set; }
 
@@ -19,6 +23,7 @@
             }
         }
 
+        [JsonIgnore]
         public bool LevelRuleEnabled
         {
             get => LevelRule != null;
@@ -47,6 +52,7 @@
             }
         }
 
+        [JsonIgnore]
         public bool MuteRuleEnabled
         {
             get => MuteRule != null;
@@ -63,6 +69,16 @@
 
                 NotifyPropertyChanged();
             }
+        }
+
+        public override RuleBase Clone()
+        {
+            return new SoundElementRule()
+            {
+                SoundElementMatcher = (MultiSoundElementMatcher)SoundElementMatcher.Clone(),
+                LevelRule = (LevelRule?)LevelRule,
+                MuteRule = (MuteRule?)MuteRule,
+            };
         }
     }
 }

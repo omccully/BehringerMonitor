@@ -33,7 +33,7 @@ namespace BehringerMonitor.Tests
             ser.LevelRule = new LevelRule()
             {
                 Level = 0.5f,
-                Operator = LevelOperator.LessThan,
+                Operator = LevelOperator.LessThanOrEqualTo,
             };
 
             vm.SaveCommand.Execute(null);
@@ -47,6 +47,18 @@ namespace BehringerMonitor.Tests
 
             Assert.Equal(2, resultIncludedRange.ChannelRange.Range!.Start);
             Assert.Equal(5, resultIncludedRange.ChannelRange.Range!.End);
+
+            var firstRuleView = newVm.Rules.First().Rule;
+            var resultSerView = Assert.IsType<SoundElementRule>(firstRuleView);
+            var resultIncludedRangeView = resultSerView.SoundElementMatcher.IncludedRanges.First();
+            Assert.Equal(2, resultIncludedRangeView.ChannelRange.Range!.Start);
+            Assert.Equal(5, resultIncludedRangeView.ChannelRange.Range!.End);
+
+            Assert.NotSame(newVm.Settings.Rules, newVm.Rules);
+            Assert.NotSame(resultSerView, resultSer);
+            Assert.NotSame(resultIncludedRangeView, resultIncludedRange);
+            Assert.NotSame(resultIncludedRangeView.ChannelRange, resultIncludedRange.ChannelRange);
+            Assert.NotSame(resultIncludedRangeView.ChannelRange.Range, resultIncludedRange.ChannelRange.Range);
         }
 
         private class TestSettingsManager : ISettingsManager

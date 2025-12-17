@@ -25,13 +25,18 @@ namespace BehringerMonitor.ViewModels
             AddRuleCommand = new RelayCommand(AddRule);
             _settingsManager = settingsManager;
             Settings = _settingsManager.ReadSettings() ?? new BehringerMonitorSettings();
-            Rules = new()
+
+            Rules = new ObservableCollection<RuleSelector>(
+                Settings.Rules.Select(r => r.Clone()).Cast<RuleSelector>());
+
+            if (!Rules.Any())
             {
-                new RuleSelector()
+                Rules.Add(new RuleSelector()
                 {
                     RuleType = typeof(SoundElementRule),
-                }
-            };
+                });
+            }
+
             IpAddress = Settings.IpAddress ?? string.Empty;
             _settingsManager = settingsManager;
         }
