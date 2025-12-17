@@ -1,7 +1,10 @@
-﻿namespace BehringerMonitor.Rules
+﻿using System.Text.Json.Serialization;
+
+namespace BehringerMonitor.Rules
 {
     public class LevelRule : RuleBase
     {
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public LevelOperator? Operator { get; set; }
 
         public float Level { get; set; }

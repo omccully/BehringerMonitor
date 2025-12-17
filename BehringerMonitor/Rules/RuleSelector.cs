@@ -7,10 +7,9 @@ namespace BehringerMonitor.Rules
         [JsonIgnore]
         public Type? RuleType
         {
-            get => field;
+            get => Rule?.GetType();
             set
             {
-                field = value;
                 if (value != null)
                 {
                     Rule = (RuleBase?)Activator.CreateInstance(value);
@@ -28,6 +27,7 @@ namespace BehringerMonitor.Rules
             set
             {
                 field = value;
+
                 NotifyPropertyChanged();
             }
         }

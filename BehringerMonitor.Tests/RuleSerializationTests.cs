@@ -41,7 +41,9 @@ namespace BehringerMonitor.Tests
             var newVm = new SettingsTabViewModel(settingsManager);
 
             Assert.Equal(ipAddress, newVm.IpAddress);
-            var firstRule = newVm.Settings.Rules.First().Rule;
+            RuleSelector firstRuleSelector = newVm.Settings.Rules.First();
+            Assert.Equal(typeof(SoundElementRule), firstRuleSelector.RuleType);
+            var firstRule = firstRuleSelector.Rule;
             var resultSer = Assert.IsType<SoundElementRule>(firstRule);
             var resultIncludedRange = resultSer.SoundElementMatcher.IncludedRanges.First();
 
