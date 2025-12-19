@@ -1,8 +1,9 @@
-﻿using System.Text.Json.Serialization;
+﻿using BehringerMonitor.Models;
+using System.Text.Json.Serialization;
 
 namespace BehringerMonitor.Rules
 {
-    public class SoundElementRule : RuleBase
+    public class SoundElementRule : EvaluatableRuleBase
     {
         public SoundElementRule()
         {
@@ -79,6 +80,33 @@ namespace BehringerMonitor.Rules
                 LevelRule = (LevelRule?)LevelRule,
                 MuteRule = (MuteRule?)MuteRule,
             };
+        }
+
+        public override IEnumerable<string> GetViolationMessages(Soundboard soundBoard)
+        {
+            if (MuteRule != null)
+            {
+                if (MuteRule.ExpectedMuted.HasValue)
+                {
+                    if (MuteRule.ExpectedMuted.Value)
+                    {
+                        if (!soundBoard.Channels.Any(c => c.Muted))
+                        {
+                            yield return "Error";
+                        }
+                    }
+                    else
+                    {
+                        if (soundBoard.Channels.Any(c => c.Muted))
+                        {
+                            yield return "Error";
+                        }
+                    }
+                }
+
+                //foreach(soundBoard.Channels)
+            }
+            yield break;
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using BehringerMonitor.Models;
+using System.Collections.ObjectModel;
 using System.Text.Json.Serialization;
 using System.Windows.Input;
 
@@ -35,6 +36,36 @@ namespace BehringerMonitor.Rules
         private void AddExcludedRange()
         {
             ExcludedRanges.Add(new SoundElementRangeMatcher());
+        }
+
+        public IEnumerable<ISoundElement> GetMatchingSoundElements(Soundboard sb)
+        {
+
+            var includedChannels = IncludedRanges //.Where(ir => ir.ChannelRange.Range != null)
+                .SelectMany(ir => ir.ChannelRange.Range!.EnumerateValues())
+                .Distinct()
+                .Order();
+
+            var excludedChannels = ExcludedRanges.Where(ir => ir.ChannelRange.Range != null)
+                .SelectMany(ir => ir.ChannelRange.Range!.EnumerateValues())
+                .Order();
+
+            foreach (int ch in includedChannels.Except(excludedChannels))
+            {
+                yield return sb.GetChannel(ch);
+            }
+
+            //foreach (var includedRange in IncludedRanges)
+            //{
+            //    var range = includedRange.ChannelRange.Range;
+            //    if (range != null)
+            //    {
+            //        foreach (int val in range.EnumerateValues())
+            //        {
+            //            yield return sb.GetChannel(val);
+            //        }
+            //    }
+            //}
         }
 
         public override RuleBase Clone()

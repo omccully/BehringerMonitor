@@ -52,4 +52,8 @@ public class Channel : ISoundElement
         return TryGetSend(sendNum) ?? throw new Exception("Invalid send");
     }
 
+    public override string ToString()
+    {
+        return $"Channel {ChannelNumber}";
+    }
 }

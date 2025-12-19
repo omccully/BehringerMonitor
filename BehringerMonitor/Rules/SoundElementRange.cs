@@ -16,5 +16,20 @@
                 End = End,
             };
         }
+
+        public IEnumerable<int> EnumerateValues()
+        {
+            if (Start.HasValue)
+            {
+                if (End.HasValue)
+                {
+                    return Enumerable.Range(Start.Value, (End.Value - Start.Value) + 1);
+                }
+
+                return Enumerable.Range(Start.Value, 1);
+            }
+
+            return Enumerable.Empty<int>();
+        }
     }
 }
