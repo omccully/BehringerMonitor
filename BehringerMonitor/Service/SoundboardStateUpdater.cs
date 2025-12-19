@@ -1,6 +1,4 @@
 ﻿using BehringerMonitor.Models;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -19,14 +17,15 @@ namespace BehringerMonitor.Service
         List<byte> _buffer = new List<byte>();
 
 
-        void TryParseMessage(List<byte> buffer)
+        int ProcessMessages(List<byte> buffer)
         {
+            int processedMessageCount = 0;
             //Debug.WriteLine(string.Join(",", buffer));
             while (true)
             {
                 if (buffer.Count == 0)
                 {
-                    return;
+                    return processedMessageCount;
                 }
 
                 if (buffer[0] == 0)
@@ -46,7 +45,7 @@ namespace BehringerMonitor.Service
 
                 if (buffer.Count == 0)
                 {
-                    return;
+                    return processedMessageCount;
                 }
 
                 if (buffer[0] == '/')
@@ -72,13 +71,14 @@ namespace BehringerMonitor.Service
                     {
                         buffer.RemoveRange(0, i);
                         i = 0;
+                        processedMessageCount++;
                     }
 
                     float? ReadFloat()
                     {
                         int mod = i % 4;
 
-                        if(mod != 0)
+                        if (mod != 0)
                         {
                             int remaining = 4 - mod;
                             i += remaining;
@@ -101,7 +101,7 @@ namespace BehringerMonitor.Service
                     {
                         int mod = i % 4;
 
-                        if(mod != 0)
+                        if (mod != 0)
                         {
                             int remaining = 4 - mod;
                             i += remaining;
@@ -141,7 +141,7 @@ namespace BehringerMonitor.Service
                         float? parseFloat = ReadFloat();
                         if (!parseFloat.HasValue)
                         {
-                            return;
+                            return processedMessageCount;
                         }
 
                         int channelNum = int.Parse(channelFaderMatch.Groups[1].Value);
@@ -169,7 +169,7 @@ namespace BehringerMonitor.Service
 
                         if (!on.HasValue)
                         {
-                            return;
+                            return processedMessageCount;
                         }
 
                         Channel? ch = _soundBoard.TryGetChannel(channelNum);
@@ -196,7 +196,7 @@ namespace BehringerMonitor.Service
                         float? parseFloat = ReadFloat();
                         if (!parseFloat.HasValue)
                         {
-                            return;
+                            return processedMessageCount;
                         }
 
                         Channel? ch = _soundBoard.TryGetChannel(channelNum);
@@ -233,7 +233,7 @@ namespace BehringerMonitor.Service
 
                         if (!on.HasValue)
                         {
-                            return;
+                            return processedMessageCount;
                         }
 
                         Channel? ch = _soundBoard.TryGetChannel(channelNum);
@@ -267,11 +267,11 @@ namespace BehringerMonitor.Service
                         float? parseFloat = ReadFloat();
                         if (!parseFloat.HasValue)
                         {
-                            return;
+                            return processedMessageCount;
                         }
 
                         Bus? bus = _soundBoard.TryGetBus(busNum);
-                        if(bus == null)
+                        if (bus == null)
                         {
                             Debug.WriteLine($"Invalid bus: {busNum}");
                         }
@@ -289,9 +289,9 @@ namespace BehringerMonitor.Service
                         int busNum = int.Parse(busOnMatch.Groups[1].Value);
 
                         bool? parseBool = ReadBool();
-                        if(!parseBool.HasValue)
+                        if (!parseBool.HasValue)
                         {
-                            return;
+                            return processedMessageCount;
                         }
 
                         Bus? bus = _soundBoard.TryGetBus(busNum);
@@ -308,20 +308,22 @@ namespace BehringerMonitor.Service
                     }
                 }
                 else
-                { 
+                {
 
                 }
             }
             while (previousBufferLength != buffer.Count);
+
+            return processedMessageCount;
         }
 
 
-        public void Update(byte[] packet)
+        public int Update(byte[] packet)
         {
             Debug.WriteLine(string.Join(",", packet));
             _buffer.AddRange(packet);
 
-            TryParseMessage(_buffer);
+            return ProcessMessages(_buffer);
         }
 
 

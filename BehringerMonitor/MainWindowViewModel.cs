@@ -2,25 +2,54 @@
 using BehringerMonitor.Service;
 using BehringerMonitor.Settings;
 using BehringerMonitor.ViewModels;
-using System.ComponentModel;
 using System.Net.Sockets;
 using System.Text;
+using System.Windows;
 using System.Windows.Input;
+using System.Windows.Threading;
 
 namespace BehringerMonitor
 {
-    public class MainWindowViewModel : INotifyPropertyChanged
+    public class MainWindowViewModel : ViewModelBase
     {
         private const int BehringerPort = 10023;
 
         private SoundboardStateUpdater _updater;
         private UdpClient? _udpClient;
 
-        public event PropertyChangedEventHandler? PropertyChanged;
-
         public Soundboard Soundboard { get; }
 
         public SettingsTabViewModel SettingsTab { get; }
+
+        public int ReceivedPacketCount
+        {
+            get => field;
+            set
+            {
+                field = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        public int ReceivedMessageCount
+        {
+            get => field;
+            set
+            {
+                field = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        public bool Initialized
+        {
+            get => field;
+            set
+            {
+                field = value;
+                NotifyPropertyChanged();
+            }
+        }
 
         public MainWindowViewModel()
         {
@@ -64,7 +93,7 @@ namespace BehringerMonitor
             set
             {
                 field = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Result)));
+                NotifyPropertyChanged();
             }
         }
 
@@ -77,7 +106,7 @@ namespace BehringerMonitor
             set
             {
                 field = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Warnings)));
+                NotifyPropertyChanged();
             }
         }
 
@@ -107,63 +136,94 @@ namespace BehringerMonitor
 
         private async Task Initialize()
         {
-            for (int ch = 1; ch <= 32; ch++)
+            try
             {
-                _udpClient.Send(EncodeOscString($"/ch/{ch:D2}/mix/fader"));
-                _udpClient.Send(EncodeOscString($"/ch/{ch:D2}/mix/on"));
-                for (int send = 1; send <= 16; send++)
+                if (_udpClient == null)
                 {
-                    _udpClient.Send(EncodeOscString($"/ch/{ch:D2}/mix/{send:D2}/on"));
-                    _udpClient.Send(EncodeOscString($"/ch/{ch:D2}/mix/{send:D2}/level"));
+                    throw new Exception("UDP client not set");
+                }
+
+                for (int ch = 1; ch <= 32; ch++)
+                {
+                    await _udpClient.SendAsync(EncodeOscString($"/ch/{ch:D2}/mix/fader"));
+                    _udpClient.Send(EncodeOscString($"/ch/{ch:D2}/mix/on"));
+                    for (int send = 1; send <= 16; send++)
+                    {
+                        await _udpClient.SendAsync(EncodeOscString($"/ch/{ch:D2}/mix/{send:D2}/on"));
+                        await _udpClient.SendAsync(EncodeOscString($"/ch/{ch:D2}/mix/{send:D2}/level"));
+                    }
+                }
+
+                Dispatcher.CurrentDispatcher.Invoke(() =>
+                {
+                    Initialized = true;
+                });
+
+                while (true)
+                {
+                    await _udpClient.SendAsync(EncodeOscString($"/xremote"));
+                    await Task.Delay(7000);
                 }
             }
-
-            while (true)
+            catch (Exception ex)
             {
-                _udpClient.Send(EncodeOscString($"/xremote"));
-                await Task.Delay(7000);
+                MessageBox.Show("Error occurred while sending messages: " + Environment.NewLine + ex);
             }
         }
 
         private async Task ReadLoop()
         {
-            while (true)
+            try
             {
-                var packet = await _udpClient.ReceiveAsync();
-                _updater.Update(packet.Buffer);
-
-                List<SoundBoardWarning> warnings = new();
-                StringBuilder errors = new StringBuilder();
-                for (int ch = 1; ch <= 32; ch++)
+                if (_udpClient == null)
                 {
-                    Channel channel = Soundboard.GetChannel(ch);
-                    ChannelSend send = channel.GetSend(8);
-
-                    if (send.Muted)
-                    {
-                        warnings.Add(new SoundBoardWarning()
-                        {
-                            Text = $"ch{ch} is muted on send to bus {send.Id}",
-                            Level = SoundBoardWarningLevel.Critical,
-                        });
-                        errors.AppendLine($"ch{ch} is muted on send to bus {send.Id}");
-                    }
-
-                    if (send.Level < 0.25)
-                    {
-                        warnings.Add(new SoundBoardWarning()
-                        {
-                            Text = $"ch{ch} is a very low level to {send.Id}",
-                            Level = SoundBoardWarningLevel.Critical,
-                        });
-                        errors.AppendLine($"ch{ch} is a very low level to {send.Id}");
-                    }
+                    throw new Exception("UDP client not set");
                 }
 
-                Warnings = warnings;
-                Result = errors.ToString();
-            }
+                while (true)
+                {
+                    var packet = await _udpClient.ReceiveAsync();
 
+                    ReceivedPacketCount++;
+
+                    ReceivedMessageCount += _updater.Update(packet.Buffer);
+
+                    List<SoundBoardWarning> warnings = new();
+                    StringBuilder errors = new StringBuilder();
+                    for (int ch = 1; ch <= 32; ch++)
+                    {
+                        Channel channel = Soundboard.GetChannel(ch);
+                        ChannelSend send = channel.GetSend(8);
+
+                        if (send.Muted)
+                        {
+                            warnings.Add(new SoundBoardWarning()
+                            {
+                                Text = $"ch{ch} is muted on send to bus {send.Id}",
+                                Level = SoundBoardWarningLevel.Critical,
+                            });
+                            errors.AppendLine($"ch{ch} is muted on send to bus {send.Id}");
+                        }
+
+                        if (send.Level < 0.25)
+                        {
+                            warnings.Add(new SoundBoardWarning()
+                            {
+                                Text = $"ch{ch} is a very low level to {send.Id}",
+                                Level = SoundBoardWarningLevel.Critical,
+                            });
+                            errors.AppendLine($"ch{ch} is a very low level to {send.Id}");
+                        }
+                    }
+
+                    Warnings = warnings;
+                    Result = errors.ToString();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error occurred while sending messages: " + Environment.NewLine + ex);
+            }
         }
 
         private static byte[] EncodeOscString(string str)

@@ -171,6 +171,30 @@
     </TabItem>
     <TabItem Header="Alerts">
       <StackPanel>
+        <StackPanel Orientation="Horizontal">
+          <TextBlock>
+            <TextBlock.Style>
+              <Style TargetType="TextBlock">
+                <Setter Property="Text" Value="Connection not initialized" />
+                <Setter Property="Foreground" Value="Red" />
+                <Style.Triggers>
+                  <DataTrigger Binding="{Binding Initialized}" Value="True">
+                    <Setter Property="Text" Value="Connection initialized" />
+                    <Setter Property="Foreground" Value="Green" />
+                  </DataTrigger>
+                </Style.Triggers>
+              </Style>
+            </TextBlock.Style>
+          </TextBlock>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal">
+          <TextBlock>Received packets: </TextBlock>
+          <TextBlock Text="{Binding ReceivedPacketCount}" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal">
+          <TextBlock>Received messages:</TextBlock>
+          <TextBlock Text="{Binding ReceivedMessageCount}" />
+        </StackPanel>
         <ItemsControl ItemsSource="{Binding Warnings}">
           <ItemsControl.ItemTemplate>
             <DataTemplate>
