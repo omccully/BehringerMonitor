@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace BehringerMonitor.Models
+﻿namespace BehringerMonitor.Models
 {
     public interface ISoundElement
     {
-        bool Muted { get; }
+        bool Muted { get; set; }
 
-        float Level { get; }
+        float Level { get; set; }
     }
 }

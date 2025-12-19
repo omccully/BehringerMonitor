@@ -1,8 +1,9 @@
-﻿using System.Text.Json.Serialization;
+﻿using BehringerMonitor.Models;
+using System.Text.Json.Serialization;
 
 namespace BehringerMonitor.Rules
 {
-    public class RuleSelector : RuleBase
+    public class RuleSelector : EvaluatableRuleBase
     {
         [JsonIgnore]
         public Type? RuleType
@@ -41,6 +42,12 @@ namespace BehringerMonitor.Rules
             {
                 Rule = Rule?.Clone(),
             };
+        }
+
+        public override IEnumerable<string> GetViolationMessages(Soundboard soundBoard)
+        {
+            yield break;
+            //Rule?.
         }
     }
 }

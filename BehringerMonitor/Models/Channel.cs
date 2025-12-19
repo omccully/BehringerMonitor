@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Channels;
-
-namespace BehringerMonitor.Models;
+﻿namespace BehringerMonitor.Models;
 
 public class Channel : ISoundElement
 {
@@ -28,7 +23,17 @@ public class Channel : ISoundElement
         }
     }
 
-    public float Level => Fader;
+    public float Level
+    {
+        get
+        {
+            return Fader;
+        }
+        set
+        {
+            Fader = value;
+        }
+    }
 
     public bool Muted { get; set; }
 

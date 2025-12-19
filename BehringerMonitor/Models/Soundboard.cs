@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace BehringerMonitor.Models;
+﻿namespace BehringerMonitor.Models;
 
 public class Soundboard
 {
@@ -24,6 +20,10 @@ public class Soundboard
                 SoundBoard = this,
             }).ToList();
     }
+
+    public IEnumerable<Channel> Channels => _channels;
+
+    public IEnumerable<Bus> Buses => _buses;
 
     public Channel? TryGetChannel(int channelNum)
     {
