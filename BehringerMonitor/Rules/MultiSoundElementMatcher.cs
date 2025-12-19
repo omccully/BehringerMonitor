@@ -41,12 +41,12 @@ namespace BehringerMonitor.Rules
         public IEnumerable<ISoundElement> GetMatchingSoundElements(Soundboard sb)
         {
 
-            var includedChannels = IncludedRanges.Where(ir => ir.ChannelRange.Range != null)
+            var includedChannels = IncludedRanges.Where(ir => ir.ChannelRange.Range != null && ir.BusRange.Range == null)
                 .SelectMany(ir => ir.ChannelRange.Range!.EnumerateValues())
                 .Distinct()
                 .Order();
 
-            var excludedChannels = ExcludedRanges.Where(ir => ir.ChannelRange.Range != null)
+            var excludedChannels = ExcludedRanges.Where(ir => ir.ChannelRange.Range != null && ir.BusRange.Range == null)
                 .SelectMany(ir => ir.ChannelRange.Range!.EnumerateValues())
                 .Order();
 
@@ -56,12 +56,12 @@ namespace BehringerMonitor.Rules
             }
 
 
-            var includedBuss = IncludedRanges.Where(ir => ir.BusRange.Range != null)
+            var includedBuss = IncludedRanges.Where(ir => ir.BusRange.Range != null && ir.ChannelRange.Range == null)
                 .SelectMany(ir => ir.BusRange.Range!.EnumerateValues())
                 .Distinct()
                 .Order();
 
-            var excludedBuss = ExcludedRanges.Where(ir => ir.BusRange.Range != null)
+            var excludedBuss = ExcludedRanges.Where(ir => ir.BusRange.Range != null && ir.ChannelRange.Range == null)
                 .SelectMany(ir => ir.BusRange.Range!.EnumerateValues())
                 .Order();
 
@@ -70,6 +70,29 @@ namespace BehringerMonitor.Rules
                 yield return sb.GetBus(ch);
             }
 
+            var includedSendsRanges = IncludedRanges.Where(ir => ir.BusRange.Range != null && ir.ChannelRange.Range != null);
+            List<ChannelSend> sends = new();
+
+            foreach (var includedSendsRange in includedSendsRanges)
+            {
+                foreach (int chNum in includedSendsRange.ChannelRange.Range!.EnumerateValues())
+                {
+                    var channel = sb.GetChannel(chNum);
+                    foreach (int busNum in includedSendsRange.BusRange.Range!.EnumerateValues())
+                    {
+                        sends.Add(channel.GetSend(busNum));
+                    }
+                }
+            }
+
+            foreach (ChannelSend send in sends)
+            {
+                yield return send;
+            }
+
+            //var excludedSends = ExcludedRanges.Where(ir => ir.BusRange.Range != null && ir.ChannelRange.Range == null)
+            //    .SelectMany(ir => ir.BusRange.Range!.EnumerateValues())
+            //    .Order();
 
             //foreach (var includedRange in IncludedRanges)
             //{

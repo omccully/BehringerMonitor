@@ -1,9 +1,4 @@
-﻿using BehringerMonitor.Service;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace BehringerMonitor.Models
+﻿namespace BehringerMonitor.Models
 {
     public class Bus : ISoundElement
     {
@@ -19,6 +14,11 @@ namespace BehringerMonitor.Models
         {
             return SoundBoard.GetChannel(channelNumber)
                 .GetSend(BusNumber);
+        }
+
+        public override string ToString()
+        {
+            return $"Bus {BusNumber}";
         }
     }
 }
