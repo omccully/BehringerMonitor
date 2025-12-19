@@ -20,5 +20,21 @@ namespace BehringerMonitor.Tests
 
             Assert.Equal(expected, range.EnumerateValues().ToList());
         }
+
+        [Fact]
+        public void SingleNumber()
+        {
+            var range = new SoundElementRange()
+            {
+                Start = 2,
+            };
+
+            var expected = new List<int>()
+            {
+                2
+            };
+
+            Assert.Equal(expected, range.EnumerateValues().ToList());
+        }
     }
 }

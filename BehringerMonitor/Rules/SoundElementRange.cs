@@ -29,6 +29,11 @@
                 return Enumerable.Range(Start.Value, 1);
             }
 
+            if (End.HasValue)
+            {
+                throw new Exception("Range has an end value but not a start value");
+            }
+
             return Enumerable.Empty<int>();
         }
     }

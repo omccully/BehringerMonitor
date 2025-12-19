@@ -75,17 +75,23 @@ namespace BehringerMonitor.Rules
 
             foreach (var includedSendsRange in includedSendsRanges)
             {
-                foreach (int chNum in includedSendsRange.ChannelRange.Range!.EnumerateValues())
-                {
-                    var channel = sb.GetChannel(chNum);
-                    foreach (int busNum in includedSendsRange.BusRange.Range!.EnumerateValues())
-                    {
-                        sends.Add(channel.GetSend(busNum));
-                    }
-                }
+                SoundElementRange includedChannelRange = includedSendsRange.ChannelRange.Range!;
+                SoundElementRange includedBusRange = includedSendsRange.BusRange.Range!;
+
+                sends.AddRange(GetSendsInRanges(sb, includedChannelRange, includedBusRange));
+            }
+            var excludedSendsRanges = ExcludedRanges.Where(ir => ir.BusRange.Range != null && ir.ChannelRange.Range != null);
+
+            List<ChannelSend> excludedSends = new();
+            foreach (var excludedSendsRange in excludedSendsRanges)
+            {
+                SoundElementRange includedChannelRange = excludedSendsRange.ChannelRange.Range!;
+                SoundElementRange includedBusRange = excludedSendsRange.BusRange.Range!;
+
+                excludedSends.AddRange(GetSendsInRanges(sb, includedChannelRange, includedBusRange));
             }
 
-            foreach (ChannelSend send in sends)
+            foreach (ChannelSend send in sends.Except(excludedSends))
             {
                 yield return send;
             }
@@ -105,6 +111,19 @@ namespace BehringerMonitor.Rules
             //        }
             //    }
             //}
+        }
+
+        private IEnumerable<ChannelSend> GetSendsInRanges(Soundboard sb, SoundElementRange includedChannels, SoundElementRange includedBuses)
+        {
+            foreach (int chNum in includedChannels.EnumerateValues())
+            {
+                var channel = sb.GetChannel(chNum);
+
+                foreach (int busNum in includedBuses.EnumerateValues())
+                {
+                    yield return channel.GetSend(busNum);
+                }
+            }
         }
 
         public override RuleBase Clone()

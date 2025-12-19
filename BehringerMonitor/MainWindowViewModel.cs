@@ -199,20 +199,20 @@ namespace BehringerMonitor
                         {
                             warnings.Add(new SoundBoardWarning()
                             {
-                                Text = $"ch{ch} is muted on send to bus {send.Id}",
+                                Text = $"ch{ch} is muted on send to bus {send.BusNumber}",
                                 Level = SoundBoardWarningLevel.Critical,
                             });
-                            errors.AppendLine($"ch{ch} is muted on send to bus {send.Id}");
+                            errors.AppendLine($"ch{ch} is muted on send to bus {send.BusNumber}");
                         }
 
                         if (send.Level < 0.25)
                         {
                             warnings.Add(new SoundBoardWarning()
                             {
-                                Text = $"ch{ch} is a very low level to {send.Id}",
+                                Text = $"ch{ch} is a very low level to {send.BusNumber}",
                                 Level = SoundBoardWarningLevel.Critical,
                             });
-                            errors.AppendLine($"ch{ch} is a very low level to {send.Id}");
+                            errors.AppendLine($"ch{ch} is a very low level to {send.BusNumber}");
                         }
                     }
 

@@ -299,5 +299,66 @@ namespace BehringerMonitor.Tests
 
             Assert.Equal(expected, matcher.GetMatchingSoundElements(sb).ToList());
         }
+
+        [Fact]
+        public void Sends_WithExclude()
+        {
+            var matcher = new MultiSoundElementMatcher()
+            {
+                IncludedRanges = new ObservableCollection<SoundElementRangeMatcher>()
+                {
+                    new SoundElementRangeMatcher()
+                    {
+                        ChannelRange = new SoundElementRangeToggle()
+                        {
+                            Range = new SoundElementRange()
+                            {
+                                Start = 6,
+                                End = 7
+                            }
+                        },
+                        BusRange = new SoundElementRangeToggle()
+                        {
+                            Range = new SoundElementRange()
+                            {
+                                Start = 2,
+                                End = 3,
+                            }
+                        }
+                    }
+                },
+                ExcludedRanges = new ObservableCollection<SoundElementRangeMatcher>()
+                {
+                    // exclude only 7 -> 3
+                    new SoundElementRangeMatcher()
+                    {
+                        ChannelRange = new SoundElementRangeToggle()
+                        {
+                            Range = new SoundElementRange()
+                            {
+                                Start = 7,
+                            }
+                        },
+                        BusRange = new SoundElementRangeToggle()
+                        {
+                            Range = new SoundElementRange()
+                            {
+                                Start = 3,
+                            }
+                        }
+                    }
+                }
+            };
+
+            var sb = new Soundboard();
+            var expected = new List<ISoundElement>()
+            {
+                sb.GetChannel(6).GetSend(2),
+                sb.GetChannel(6).GetSend(3),
+                sb.GetChannel(7).GetSend(2),
+            };
+
+            Assert.Equal(expected, matcher.GetMatchingSoundElements(sb).ToList());
+        }
     }
 }

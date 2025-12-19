@@ -2,17 +2,20 @@
 
 public class Channel : ISoundElement
 {
-    public Channel()
+    public Channel(int channelNumber)
     {
         Sends = Enumerable.Range(1, 16).Select(c => new ChannelSend()
         {
-            Id = c,
+            ChannelNumber = channelNumber,
+            BusNumber = c,
         }).ToList();
+
+        ChannelNumber = channelNumber;
     }
 
     public IReadOnlyList<ChannelSend> Sends { get; }
 
-    public required int ChannelNumber { get; set; }
+    public int ChannelNumber { get; }
 
     public float Fader
     {

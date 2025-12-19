@@ -210,7 +210,7 @@ namespace BehringerMonitor.Service
                             ChannelSend? send = ch.TryGetSend(busNum);
                             if (send != null)
                             {
-                                Debug.WriteLine($"Setting send {channelNum} -> {send.Id}: {parseFloat.Value}");
+                                Debug.WriteLine($"Setting send {channelNum} -> {send.BusNumber}: {parseFloat.Value}");
                                 send.Level = parseFloat.Value;
                             }
                             else
@@ -247,7 +247,7 @@ namespace BehringerMonitor.Service
                             ChannelSend? send = ch.TryGetSend(busNum);
                             if (send != null)
                             {
-                                Debug.WriteLine($"Setting send {channelNum} -> {send.Id}: on={on.Value}");
+                                Debug.WriteLine($"Setting send {channelNum} -> {send.BusNumber}: on={on.Value}");
                                 send.Muted = !on.Value;
                             }
                             else

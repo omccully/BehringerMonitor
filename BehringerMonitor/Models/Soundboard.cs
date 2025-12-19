@@ -8,10 +8,7 @@ public class Soundboard
     public Soundboard()
     {
         _channels = Enumerable.Range(1, 32)
-            .Select(channelNum => new Channel()
-            {
-                ChannelNumber = channelNum
-            }).ToList();
+            .Select(channelNum => new Channel(channelNum)).ToList();
 
         _buses = Enumerable.Range(1, 16)
             .Select(busNum => new Bus()
