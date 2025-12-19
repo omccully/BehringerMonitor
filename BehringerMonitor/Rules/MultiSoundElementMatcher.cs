@@ -41,7 +41,7 @@ namespace BehringerMonitor.Rules
         public IEnumerable<ISoundElement> GetMatchingSoundElements(Soundboard sb)
         {
 
-            var includedChannels = IncludedRanges //.Where(ir => ir.ChannelRange.Range != null)
+            var includedChannels = IncludedRanges.Where(ir => ir.ChannelRange.Range != null)
                 .SelectMany(ir => ir.ChannelRange.Range!.EnumerateValues())
                 .Distinct()
                 .Order();
@@ -54,6 +54,22 @@ namespace BehringerMonitor.Rules
             {
                 yield return sb.GetChannel(ch);
             }
+
+
+            var includedBuss = IncludedRanges.Where(ir => ir.BusRange.Range != null)
+                .SelectMany(ir => ir.BusRange.Range!.EnumerateValues())
+                .Distinct()
+                .Order();
+
+            var excludedBuss = ExcludedRanges.Where(ir => ir.BusRange.Range != null)
+                .SelectMany(ir => ir.BusRange.Range!.EnumerateValues())
+                .Order();
+
+            foreach (int ch in includedBuss.Except(excludedBuss))
+            {
+                yield return sb.GetBus(ch);
+            }
+
 
             //foreach (var includedRange in IncludedRanges)
             //{

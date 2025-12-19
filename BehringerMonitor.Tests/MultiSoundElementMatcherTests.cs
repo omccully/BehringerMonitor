@@ -38,7 +38,7 @@ namespace BehringerMonitor.Tests
         }
 
         [Fact]
-        public void OverlappingIncludes()
+        public void OverlappingIncludeChannels()
         {
             var matcher = new MultiSoundElementMatcher()
             {
@@ -120,6 +120,140 @@ namespace BehringerMonitor.Tests
             {
                 sb.GetChannel(2),
                 sb.GetChannel(5),
+            };
+
+            Assert.Equal(expected, matcher.GetMatchingSoundElements(sb).ToList());
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        [Fact]
+        public void IncludeBuses()
+        {
+            var matcher = new MultiSoundElementMatcher()
+            {
+                IncludedRanges = new ObservableCollection<SoundElementRangeMatcher>()
+                {
+                    new SoundElementRangeMatcher()
+                    {
+                        BusRange = new SoundElementRangeToggle()
+                        {
+                            Range = new SoundElementRange()
+                            {
+                                Start = 2,
+                                End = 3,
+                            }
+                        }
+                    }
+                }
+            };
+
+            var sb = new Soundboard();
+            var expected = new List<ISoundElement>()
+            {
+                sb.GetBus(2),
+                sb.GetBus(3),
+            };
+
+            Assert.Equal(expected, matcher.GetMatchingSoundElements(sb).ToList());
+        }
+
+        [Fact]
+        public void OverlappingIncludeBuses()
+        {
+            var matcher = new MultiSoundElementMatcher()
+            {
+                IncludedRanges = new ObservableCollection<SoundElementRangeMatcher>()
+                {
+                    new SoundElementRangeMatcher()
+                    {
+                        BusRange = new SoundElementRangeToggle()
+                        {
+                            Range = new SoundElementRange()
+                            {
+                                Start = 2,
+                                End = 3,
+                            }
+                        }
+                    },
+                    new SoundElementRangeMatcher()
+                    {
+                        BusRange = new SoundElementRangeToggle()
+                        {
+                            Range = new SoundElementRange()
+                            {
+                                Start = 3,
+                                End = 4,
+                            }
+                        }
+                    }
+                }
+            };
+
+            var sb = new Soundboard();
+            var expected = new List<ISoundElement>()
+            {
+                sb.GetBus(2),
+                sb.GetBus(3),
+                sb.GetBus(4),
+            };
+
+            Assert.Equal(expected, matcher.GetMatchingSoundElements(sb).ToList());
+        }
+
+        [Fact]
+        public void IncludeBuss_AndExcludeBus()
+        {
+            var matcher = new MultiSoundElementMatcher()
+            {
+                IncludedRanges = new ObservableCollection<SoundElementRangeMatcher>()
+                {
+                    new SoundElementRangeMatcher()
+                    {
+                        BusRange = new SoundElementRangeToggle()
+                        {
+                            Range = new SoundElementRange()
+                            {
+                                Start = 2,
+                                End = 5,
+                            }
+                        }
+                    }
+                },
+                ExcludedRanges = new ObservableCollection<SoundElementRangeMatcher>()
+                {
+                    new SoundElementRangeMatcher()
+                    {
+                        BusRange = new SoundElementRangeToggle()
+                        {
+                            Range = new SoundElementRange()
+                            {
+                                Start = 3,
+                                End = 4,
+                            }
+                        }
+                    }
+                }
+            };
+
+            var sb = new Soundboard();
+            var expected = new List<ISoundElement>()
+            {
+                sb.GetBus(2),
+                sb.GetBus(5),
             };
 
             Assert.Equal(expected, matcher.GetMatchingSoundElements(sb).ToList());
