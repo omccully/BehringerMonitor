@@ -13,7 +13,7 @@ namespace BehringerMonitor.Rules
             {
                 if (value != null)
                 {
-                    Rule = (RuleBase?)Activator.CreateInstance(value);
+                    Rule = (EvaluatableRuleBase?)Activator.CreateInstance(value);
                 }
                 else
                 {
@@ -22,7 +22,7 @@ namespace BehringerMonitor.Rules
             }
         }
 
-        public RuleBase? Rule
+        public EvaluatableRuleBase? Rule
         {
             get => field;
             set
@@ -40,14 +40,18 @@ namespace BehringerMonitor.Rules
         {
             return new RuleSelector()
             {
-                Rule = Rule?.Clone(),
+                Rule = (EvaluatableRuleBase?)Rule?.Clone(),
             };
         }
 
         public override IEnumerable<string> GetViolationMessages(Soundboard soundBoard)
         {
-            yield break;
-            //Rule?.
+            if (Rule != null)
+            {
+                return Rule.GetViolationMessages(soundBoard);
+            }
+
+            return Enumerable.Empty<string>();
         }
     }
 }

@@ -84,28 +84,34 @@ namespace BehringerMonitor.Rules
 
         public override IEnumerable<string> GetViolationMessages(Soundboard soundBoard)
         {
-            if (MuteRule != null)
+            var eles = SoundElementMatcher.GetMatchingSoundElements(soundBoard).ToList();
+            foreach (var ele in eles)
             {
-                if (MuteRule.ExpectedMuted.HasValue)
+                if (MuteRule != null)
                 {
-                    if (MuteRule.ExpectedMuted.Value)
+                    if (MuteRule.ExpectedMuted.HasValue)
                     {
-                        if (!soundBoard.Channels.Any(c => c.Muted))
+                        if (MuteRule.ExpectedMuted.Value)
                         {
-                            yield return "Error";
+                            if (!ele.Muted)
+                            {
+                                yield return $"Expected {ele} to be muted, but it is not.";
+                            }
+                        }
+                        else
+                        {
+                            if (ele.Muted)
+                            {
+                                yield return $"Expected {ele} to be not muted, but it is.";
+                            }
                         }
                     }
-                    else
-                    {
-                        if (soundBoard.Channels.Any(c => c.Muted))
-                        {
-                            yield return "Error";
-                        }
-                    }
+
+                    //foreach(soundBoard.Channels)
                 }
 
-                //foreach(soundBoard.Channels)
             }
+
             yield break;
         }
     }

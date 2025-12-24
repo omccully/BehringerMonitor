@@ -31,7 +31,7 @@ namespace BehringerMonitor.Tests
                                     Range = new SoundElementRange()
                                     {
                                         Start = 2,
-                                        End = 3,
+                                        End = 2,
                                     }
                                 }
                             }
