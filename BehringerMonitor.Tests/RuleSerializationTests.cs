@@ -1,6 +1,7 @@
 ﻿using BehringerMonitor.Rules;
 using BehringerMonitor.Settings;
 using BehringerMonitor.ViewModels;
+using System.Collections.ObjectModel;
 using System.Text.Json;
 
 namespace BehringerMonitor.Tests
@@ -30,10 +31,13 @@ namespace BehringerMonitor.Tests
             includeMatcher.ChannelRange.Range.Start = 2;
             includeMatcher.ChannelRange.Range.End = 5;
 
-            ser.LevelRule = new LevelRule()
+            ser.LevelRules = new ObservableCollection<LevelRule>()
             {
-                Level = 0.5f,
-                Operator = LevelOperator.LessThanOrEqualTo,
+                new LevelRule()
+                {
+                    Level = 0.5f,
+                    Operator = LevelOperator.LessThanOrEqualTo,
+                }
             };
 
             vm.SaveCommand.Execute(null);

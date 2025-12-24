@@ -94,11 +94,14 @@ namespace BehringerMonitor.Tests
                             }
                         }
                     },
-                    LevelRule = new LevelRule()
+                    LevelRules = new ObservableCollection<LevelRule>()
                     {
-                        Level = expectedLevel,
-                        Operator = levelOperator,
-                    }
+                        new LevelRule()
+                        {
+                            Level = expectedLevel,
+                            Operator = levelOperator,
+                        }
+                    },
                 }
             };
 
