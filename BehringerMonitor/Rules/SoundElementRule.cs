@@ -5,6 +5,8 @@ namespace BehringerMonitor.Rules
 {
     public class SoundElementRule : EvaluatableRuleBase
     {
+        private const float _tolerance = 0.001f;
+
         public SoundElementRule()
         {
             SoundElementMatcher = new MultiSoundElementMatcher();
@@ -106,8 +108,29 @@ namespace BehringerMonitor.Rules
                             }
                         }
                     }
+                }
 
-                    //foreach(soundBoard.Channels)
+                if (LevelRule != null)
+                {
+                    if (LevelRule.Operator.HasValue)
+                    {
+                        switch (LevelRule.Operator)
+                        {
+                            case LevelOperator.LessThanOrEqualTo:
+                                if (ele.Level > LevelRule.Level + _tolerance)
+                                {
+                                    yield return $"Expected {ele} to have a level less than {LevelRule.Level}, but it is {ele.Level}";
+                                }
+                                break;
+
+                            case LevelOperator.GreaterThanOrEqualTo:
+                                if (ele.Level < LevelRule.Level - _tolerance)
+                                {
+                                    yield return $"Expected {ele} to have a level greater than {LevelRule.Level}, but it is {ele.Level}";
+                                }
+                                break;
+                        }
+                    }
                 }
 
             }
