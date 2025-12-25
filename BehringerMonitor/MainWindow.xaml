@@ -9,23 +9,27 @@
         xmlns:rules="clr-namespace:BehringerMonitor.Rules"
         xmlns:settings="clr-namespace:BehringerMonitor.Settings"
         mc:Ignorable="d"
-        Title="Behringer Monitor" Height="450" Width="800">
+        Title="Behringer Monitor" Height="700" Width="1000">
   <Window.Resources>
     <conveters:TypeToNameConverter x:Key="TypeToNameConverter"/>
     <DataTemplate DataType="{x:Type rules:RuleSelector}">
       <Border BorderBrush="Black" BorderThickness="1,1,1,1" CornerRadius="8,8,8,8" Padding="3,3,3,3"> 
         <StackPanel Orientation="Horizontal">
-          <ComboBox
-              ItemsSource="{x:Static viewmodels:SettingsTabViewModel.BaseRuleTypes}"
-              SelectedItem="{Binding RuleType}"
-              MinWidth="100"
-              Text="Rule Type">
-            <ComboBox.ItemTemplate>
-              <DataTemplate>
-                <TextBlock Text="{Binding Converter={StaticResource TypeToNameConverter}}"/>
-              </DataTemplate>
-            </ComboBox.ItemTemplate>
-          </ComboBox>
+          <StackPanel Width="200">
+            <ComboBox
+                ItemsSource="{x:Static viewmodels:SettingsTabViewModel.BaseRuleTypes}"
+                SelectedItem="{Binding RuleType}"
+                MinWidth="100"
+                Text="Rule Type">
+              <ComboBox.ItemTemplate>
+                <DataTemplate>
+                  <TextBlock Text="{Binding Converter={StaticResource TypeToNameConverter}}"/>
+                </DataTemplate>
+              </ComboBox.ItemTemplate>
+            </ComboBox>
+            <TextBlock>Description:</TextBlock>
+            <TextBox Text="{Binding Description, Mode=TwoWay}" TextWrapping="Wrap"></TextBox>
+          </StackPanel>
           <ContentControl Content="{Binding Rule}"/>
         </StackPanel>
       </Border>
@@ -207,21 +211,23 @@
     <TabItem Header="Settings" DataContext="{Binding SettingsTab}">
       <DockPanel>
         <Button Command="{Binding SaveCommand}" DockPanel.Dock="Bottom">Save</Button>
-        <StackPanel>
-          <StackPanel Orientation="Horizontal">
-            <TextBlock>Settings are saved at:</TextBlock>
-            <TextBox IsReadOnly="true" Text="{x:Static settings:SettingsHelper.DataFolderPath}"></TextBox>
-          </StackPanel>
+        <ScrollViewer>
+          <StackPanel>
+            <StackPanel Orientation="Horizontal">
+              <TextBlock>Settings are saved at:</TextBlock>
+              <TextBox IsReadOnly="true" Text="{x:Static settings:SettingsHelper.DataFolderPath}"></TextBox>
+            </StackPanel>
 
-          <StackPanel Orientation="Horizontal">
-            <TextBlock>X32 IP Address</TextBlock>
-            <TextBox Width="200" Text="{Binding IpAddress, Mode=TwoWay}" />
-          </StackPanel>
+            <StackPanel Orientation="Horizontal">
+              <TextBlock>X32 IP Address</TextBlock>
+              <TextBox Width="200" Text="{Binding IpAddress, Mode=TwoWay}" />
+            </StackPanel>
 
-          <ItemsControl ItemsSource="{Binding Rules}">
-          </ItemsControl>
-          <Button Command="{Binding AddRuleCommand}">Add Rule</Button>
-        </StackPanel>
+            <ItemsControl ItemsSource="{Binding Rules}">
+            </ItemsControl>
+            <Button Command="{Binding AddRuleCommand}">Add Rule</Button>
+          </StackPanel>
+        </ScrollViewer>
       </DockPanel>
     </TabItem>
   </TabControl>

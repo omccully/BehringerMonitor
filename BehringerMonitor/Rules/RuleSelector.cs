@@ -33,6 +33,8 @@ namespace BehringerMonitor.Rules
             }
         }
 
+        public string Description { get; set; } = string.Empty;
+
         [JsonIgnore]
         public override bool HasEffect => Rule != null;
 
@@ -41,6 +43,7 @@ namespace BehringerMonitor.Rules
             return new RuleSelector()
             {
                 Rule = (EvaluatableRuleBase?)Rule?.Clone(),
+                Description = Description,
             };
         }
 
