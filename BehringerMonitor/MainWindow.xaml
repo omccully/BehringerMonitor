@@ -37,10 +37,10 @@
         <ContentControl Content="{Binding SoundElementMatcher}"/>
         <StackPanel Orientation="Vertical">
           <StackPanel Orientation="Horizontal">
-            <TextBlock>Level Rule:</TextBlock>
-            <CheckBox IsChecked="{Binding LevelRuleEnabled}">
-            </CheckBox>
-            <ContentControl Content="{Binding LevelRule}"></ContentControl>
+            <TextBlock>Level Rule(s):</TextBlock>
+            <Button Command="{Binding AddRuleCommand}">Add level rule</Button>
+            <ItemsControl ItemsSource="{Binding LevelRules}">
+            </ItemsControl>
           </StackPanel>
           <StackPanel Orientation="Horizontal">
             <TextBlock>Mute Rule:</TextBlock>
@@ -95,12 +95,15 @@
 
     <DataTemplate DataType="{x:Type rules:SoundElementRangeMatcher}">
       <Border BorderThickness="1" BorderBrush="Orange">
-        <StackPanel Orientation="Horizontal">
-          <TextBlock>Channel Range:</TextBlock>
-          <ContentControl Content="{Binding ChannelRange}" />
-
-          <TextBlock>Bus Range:</TextBlock>
-          <ContentControl Content="{Binding BusRange}"/>
+        <StackPanel>
+          <StackPanel Orientation="Horizontal">
+            <TextBlock>Channel Range:</TextBlock>
+            <ContentControl Content="{Binding ChannelRange}" />
+          </StackPanel>
+          <StackPanel Orientation="Horizontal">
+            <TextBlock>Bus Range:</TextBlock>
+            <ContentControl Content="{Binding BusRange}"/>
+          </StackPanel>
         </StackPanel>
       </Border>
     </DataTemplate>

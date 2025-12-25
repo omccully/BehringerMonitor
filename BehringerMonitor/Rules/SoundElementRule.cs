@@ -1,6 +1,7 @@
 ﻿using BehringerMonitor.Models;
 using System.Collections.ObjectModel;
 using System.Text.Json.Serialization;
+using System.Windows.Input;
 
 namespace BehringerMonitor.Rules
 {
@@ -11,13 +12,18 @@ namespace BehringerMonitor.Rules
         public SoundElementRule()
         {
             SoundElementMatcher = new MultiSoundElementMatcher();
+            AddRuleCommand = new RelayCommand(AddRule);
         }
+
+        public ICommand AddRuleCommand { get; }
 
         public override bool HasEffect => SoundElementMatcher.HasEffect && (LevelRules.Any(lr => lr.HasEffect) || MuteRule?.HasEffect == true);
 
         public MultiSoundElementMatcher SoundElementMatcher { get; set; }
 
         public ObservableCollection<LevelRule> LevelRules { get; set; } = new ObservableCollection<LevelRule>();
+
+
 
         //public LevelRule? LevelRule
         //{
@@ -75,6 +81,11 @@ namespace BehringerMonitor.Rules
 
                 NotifyPropertyChanged();
             }
+        }
+
+        private void AddRule()
+        {
+            LevelRules.Add(new LevelRule());
         }
 
         public override RuleBase Clone()

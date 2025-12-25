@@ -119,6 +119,65 @@ namespace BehringerMonitor.Tests
             }
         }
 
+        [Theory]
+        [InlineData(0.5f, 0.4f, 0.6f, false)]
+        [InlineData(0.7f, 0.4f, 0.6f, true)]
+        [InlineData(0.3f, 0.4f, 0.6f, true)]
+        public void Channel_LevelRulesBetween(float actualLevel, float expectedMin, float expectedMax, bool expectMessage)
+        {
+            var sb = CreateNeutralSoundboard();
+
+            var baseRule = new RuleSelector()
+            {
+                Rule = new SoundElementRule()
+                {
+                    SoundElementMatcher = new MultiSoundElementMatcher()
+                    {
+                        IncludedRanges = new ObservableCollection<SoundElementRangeMatcher>()
+                        {
+                            new SoundElementRangeMatcher()
+                            {
+                                ChannelRange = new SoundElementRangeToggle()
+                                {
+                                    Range = new SoundElementRange()
+                                    {
+                                        Start = 2,
+                                        End = 2,
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    LevelRules = new ObservableCollection<LevelRule>()
+                    {
+                        new LevelRule()
+                        {
+                            Level = expectedMax,
+                            Operator = LevelOperator.LessThanOrEqualTo,
+                        },
+                        new LevelRule()
+                        {
+                            Level = expectedMin,
+                            Operator = LevelOperator.GreaterThanOrEqualTo,
+                        }
+                    },
+                }
+            };
+
+            sb.GetChannel(2).Level = actualLevel;
+
+            var messages = baseRule.GetViolationMessages(sb);
+
+            if (expectMessage)
+            {
+                Assert.NotEmpty(messages);
+            }
+            else
+            {
+                Assert.Empty(messages);
+            }
+        }
+
         private Soundboard CreateNeutralSoundboard()
         {
             var sb = new Soundboard();
