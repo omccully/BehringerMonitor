@@ -190,31 +190,45 @@ namespace BehringerMonitor
 
                     List<SoundBoardWarning> warnings = new();
                     StringBuilder errors = new StringBuilder();
-                    for (int ch = 1; ch <= 32; ch++)
+
+                    foreach (var rule in SettingsTab.Settings.Rules)
                     {
-                        Channel channel = Soundboard.GetChannel(ch);
-                        ChannelSend send = channel.GetSend(8);
-
-                        if (send.Muted)
+                        foreach (string violationMessage in rule.GetViolationMessages(Soundboard))
                         {
                             warnings.Add(new SoundBoardWarning()
                             {
-                                Text = $"ch{ch} is muted on send to bus {send.BusNumber}",
+                                Text = violationMessage,
                                 Level = SoundBoardWarningLevel.Critical,
                             });
-                            errors.AppendLine($"ch{ch} is muted on send to bus {send.BusNumber}");
-                        }
-
-                        if (send.Level < 0.25)
-                        {
-                            warnings.Add(new SoundBoardWarning()
-                            {
-                                Text = $"ch{ch} is a very low level to {send.BusNumber}",
-                                Level = SoundBoardWarningLevel.Critical,
-                            });
-                            errors.AppendLine($"ch{ch} is a very low level to {send.BusNumber}");
+                            errors.AppendLine(violationMessage);
                         }
                     }
+
+                    //for (int ch = 1; ch <= 32; ch++)
+                    //{
+                    //    Channel channel = Soundboard.GetChannel(ch);
+                    //    ChannelSend send = channel.GetSend(8);
+
+                    //    if (send.Muted)
+                    //    {
+                    //        warnings.Add(new SoundBoardWarning()
+                    //        {
+                    //            Text = $"ch{ch} is muted on send to bus {send.BusNumber}",
+                    //            Level = SoundBoardWarningLevel.Critical,
+                    //        });
+                    //        errors.AppendLine($"ch{ch} is muted on send to bus {send.BusNumber}");
+                    //    }
+
+                    //    if (send.Level < 0.25)
+                    //    {
+                    //        warnings.Add(new SoundBoardWarning()
+                    //        {
+                    //            Text = $"ch{ch} is a very low level to {send.BusNumber}",
+                    //            Level = SoundBoardWarningLevel.Critical,
+                    //        });
+                    //        errors.AppendLine($"ch{ch} is a very low level to {send.BusNumber}");
+                    //    }
+                    //}
 
                     Warnings = warnings;
                     Result = errors.ToString();

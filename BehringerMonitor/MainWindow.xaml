@@ -151,27 +151,6 @@
     </DataTemplate>
   </Window.Resources>
   <TabControl>
-    <TabItem Header="Settings" DataContext="{Binding SettingsTab}">
-      <DockPanel>
-        <Button Command="{Binding SaveCommand}" DockPanel.Dock="Bottom">Save</Button>
-        <StackPanel>
-          <StackPanel Orientation="Horizontal">
-            <TextBlock>Settings are saved at:</TextBlock>
-            <TextBox IsReadOnly="true" Text="{x:Static settings:SettingsHelper.DataFolderPath}"></TextBox>
-          </StackPanel>
-          
-          <StackPanel Orientation="Horizontal">
-            <TextBlock>X32 IP Address</TextBlock>
-            <TextBox Width="200" Text="{Binding IpAddress, Mode=TwoWay}" />
-          </StackPanel>
-
-          <ItemsControl ItemsSource="{Binding Rules}">
-          </ItemsControl>
-          <Button Command="{Binding AddRuleCommand}">Add Rule</Button>
-        </StackPanel>
-      </DockPanel>
-      
-    </TabItem>
     <TabItem Header="Alerts">
       <StackPanel>
         <StackPanel Orientation="Horizontal">
@@ -191,7 +170,7 @@
           </TextBlock>
         </StackPanel>
         <StackPanel Orientation="Horizontal">
-          <TextBlock>Received packets: </TextBlock>
+          <TextBlock>Received packets:</TextBlock>
           <TextBlock Text="{Binding ReceivedPacketCount}" />
         </StackPanel>
         <StackPanel Orientation="Horizontal">
@@ -225,6 +204,25 @@
         </ItemsControl>
       </StackPanel>
     </TabItem>
+    <TabItem Header="Settings" DataContext="{Binding SettingsTab}">
+      <DockPanel>
+        <Button Command="{Binding SaveCommand}" DockPanel.Dock="Bottom">Save</Button>
+        <StackPanel>
+          <StackPanel Orientation="Horizontal">
+            <TextBlock>Settings are saved at:</TextBlock>
+            <TextBox IsReadOnly="true" Text="{x:Static settings:SettingsHelper.DataFolderPath}"></TextBox>
+          </StackPanel>
+
+          <StackPanel Orientation="Horizontal">
+            <TextBlock>X32 IP Address</TextBlock>
+            <TextBox Width="200" Text="{Binding IpAddress, Mode=TwoWay}" />
+          </StackPanel>
+
+          <ItemsControl ItemsSource="{Binding Rules}">
+          </ItemsControl>
+          <Button Command="{Binding AddRuleCommand}">Add Rule</Button>
+        </StackPanel>
+      </DockPanel>
+    </TabItem>
   </TabControl>
- 
 </Window>
