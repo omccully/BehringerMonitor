@@ -143,6 +143,7 @@ namespace BehringerMonitor
                     throw new Exception("UDP client not set");
                 }
 
+                // request the initial values for each
                 for (int ch = 1; ch <= 32; ch++)
                 {
                     await _udpClient.SendAsync(EncodeOscString($"/ch/{ch:D2}/mix/fader"));
@@ -152,6 +153,12 @@ namespace BehringerMonitor
                         await _udpClient.SendAsync(EncodeOscString($"/ch/{ch:D2}/mix/{send:D2}/on"));
                         await _udpClient.SendAsync(EncodeOscString($"/ch/{ch:D2}/mix/{send:D2}/level"));
                     }
+                }
+
+                for (int bus = 1; bus <= 16; bus++)
+                {
+                    await _udpClient.SendAsync(EncodeOscString($"/bus/{bus:D2}/mix/fader"));
+                    await _udpClient.SendAsync(EncodeOscString($"/bus/{bus:D2}/mix/on"));
                 }
 
                 Dispatcher.CurrentDispatcher.Invoke(() =>
