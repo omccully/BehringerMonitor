@@ -51,6 +51,8 @@ namespace BehringerMonitor
             }
         }
 
+        public ToolbarViewModel ToolBar { get; } = new ToolbarViewModel();
+
         public MainWindowViewModel()
         {
             SettingsTab = new(new SettingsManager());

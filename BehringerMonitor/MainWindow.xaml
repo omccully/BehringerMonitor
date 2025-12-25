@@ -154,81 +154,92 @@
       </StackPanel>
     </DataTemplate>
   </Window.Resources>
-  <TabControl>
-    <TabItem Header="Alerts">
-      <StackPanel>
-        <StackPanel Orientation="Horizontal">
-          <TextBlock>
-            <TextBlock.Style>
-              <Style TargetType="TextBlock">
-                <Setter Property="Text" Value="Connection not initialized" />
-                <Setter Property="Foreground" Value="Red" />
-                <Style.Triggers>
-                  <DataTrigger Binding="{Binding Initialized}" Value="True">
-                    <Setter Property="Text" Value="Connection initialized" />
-                    <Setter Property="Foreground" Value="Green" />
-                  </DataTrigger>
-                </Style.Triggers>
-              </Style>
-            </TextBlock.Style>
-          </TextBlock>
-        </StackPanel>
-        <StackPanel Orientation="Horizontal">
-          <TextBlock>Received packets:</TextBlock>
-          <TextBlock Text="{Binding ReceivedPacketCount}" />
-        </StackPanel>
-        <StackPanel Orientation="Horizontal">
-          <TextBlock>Received messages:</TextBlock>
-          <TextBlock Text="{Binding ReceivedMessageCount}" />
-        </StackPanel>
-        <ItemsControl ItemsSource="{Binding Warnings}">
-          <ItemsControl.ItemTemplate>
-            <DataTemplate>
-              <Grid>
-                <StackPanel>
-                  <TextBlock Margin="3,3,3,0" 
-                        FontSize="15"
-                        FontWeight="Bold"
-                    Text="{Binding Path=Text}">
-                    <TextBlock.Style>
-                      <Style TargetType="TextBlock">
-                        <Setter Property="Foreground" Value="Orange" />
-                        <Style.Triggers>
-                          <DataTrigger Binding="{Binding Level}" Value="{x:Static viewmodels:SoundBoardWarningLevel.Critical}">
-                            <Setter Property="Foreground" Value="Red" />
-                          </DataTrigger>
-                        </Style.Triggers>
-                      </Style>
-                    </TextBlock.Style>
-                  </TextBlock>
-                </StackPanel>
-              </Grid>
-            </DataTemplate>
-          </ItemsControl.ItemTemplate>
-        </ItemsControl>
-      </StackPanel>
-    </TabItem>
-    <TabItem Header="Settings" DataContext="{Binding SettingsTab}">
-      <DockPanel>
-        <Button Command="{Binding SaveCommand}" DockPanel.Dock="Bottom">Save</Button>
-        <ScrollViewer>
-          <StackPanel>
-            <StackPanel Orientation="Horizontal">
-              <TextBlock>Settings are saved at:</TextBlock>
-              <TextBox IsReadOnly="true" Text="{x:Static settings:SettingsHelper.DataFolderPath}"></TextBox>
-            </StackPanel>
-
-            <StackPanel Orientation="Horizontal">
-              <TextBlock>X32 IP Address</TextBlock>
-              <TextBox Width="200" Text="{Binding IpAddress, Mode=TwoWay}" />
-            </StackPanel>
-
-            <ItemsControl ItemsSource="{Binding Rules}">
-            </ItemsControl>
-            <Button Command="{Binding AddRuleCommand}">Add Rule</Button>
+  <DockPanel>
+    <Menu DataContext="{Binding ToolBar}" DockPanel.Dock="Top">
+      <MenuItem Header="_File">
+        <MenuItem Header="_Open Data Folder" Command="{Binding OpenDataFolderCommand}" />
+      </MenuItem>
+      <MenuItem Header="_About">
+        <MenuItem Header="_GitHub" Command="{Binding OpenGitHubCommand}" />
+      </MenuItem>
+    </Menu>
+    <TabControl>
+      <TabItem Header="Alerts">
+        <StackPanel>
+          <StackPanel Orientation="Horizontal">
+            <TextBlock>
+              <TextBlock.Style>
+                <Style TargetType="TextBlock">
+                  <Setter Property="Text" Value="Connection not initialized" />
+                  <Setter Property="Foreground" Value="Red" />
+                  <Style.Triggers>
+                    <DataTrigger Binding="{Binding Initialized}" Value="True">
+                      <Setter Property="Text" Value="Connection initialized" />
+                      <Setter Property="Foreground" Value="Green" />
+                    </DataTrigger>
+                  </Style.Triggers>
+                </Style>
+              </TextBlock.Style>
+            </TextBlock>
           </StackPanel>
-        </ScrollViewer>
-      </DockPanel>
-    </TabItem>
-  </TabControl>
+          <StackPanel Orientation="Horizontal">
+            <TextBlock>Received packets:</TextBlock>
+            <TextBlock Text="{Binding ReceivedPacketCount}" />
+          </StackPanel>
+          <StackPanel Orientation="Horizontal">
+            <TextBlock>Received messages:</TextBlock>
+            <TextBlock Text="{Binding ReceivedMessageCount}" />
+          </StackPanel>
+          <ItemsControl ItemsSource="{Binding Warnings}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate>
+                <Grid>
+                  <StackPanel>
+                    <TextBlock Margin="3,3,3,0" 
+                      FontSize="15"
+                      FontWeight="Bold"
+                  Text="{Binding Path=Text}">
+                      <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                          <Setter Property="Foreground" Value="Orange" />
+                          <Style.Triggers>
+                            <DataTrigger Binding="{Binding Level}" Value="{x:Static viewmodels:SoundBoardWarningLevel.Critical}">
+                              <Setter Property="Foreground" Value="Red" />
+                            </DataTrigger>
+                          </Style.Triggers>
+                        </Style>
+                      </TextBlock.Style>
+                    </TextBlock>
+                  </StackPanel>
+                </Grid>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </StackPanel>
+      </TabItem>
+      <TabItem Header="Settings" DataContext="{Binding SettingsTab}">
+        <DockPanel>
+          <Button Command="{Binding SaveCommand}" DockPanel.Dock="Bottom">Save</Button>
+          <ScrollViewer>
+            <StackPanel>
+              <StackPanel Orientation="Horizontal">
+                <TextBlock>Settings are saved at:</TextBlock>
+                <TextBox IsReadOnly="true" Text="{x:Static settings:SettingsHelper.DataFolderPath}"></TextBox>
+              </StackPanel>
+
+              <StackPanel Orientation="Horizontal">
+                <TextBlock>X32 IP Address</TextBlock>
+                <TextBox Width="200" Text="{Binding IpAddress, Mode=TwoWay}" />
+              </StackPanel>
+
+              <ItemsControl ItemsSource="{Binding Rules}">
+              </ItemsControl>
+              <Button Command="{Binding AddRuleCommand}">Add Rule</Button>
+            </StackPanel>
+          </ScrollViewer>
+        </DockPanel>
+      </TabItem>
+    </TabControl>
+  </DockPanel>
+  
 </Window>
