@@ -162,6 +162,9 @@
       <MenuItem Header="_About">
         <MenuItem Header="_GitHub" Command="{Binding OpenGitHubCommand}" />
       </MenuItem>
+      <MenuItem Header="_Help">
+        <MenuItem Header="_Update" Command="{Binding UpdateCommand}" />
+      </MenuItem>
     </Menu>
     <TabControl>
       <TabItem Header="Alerts">

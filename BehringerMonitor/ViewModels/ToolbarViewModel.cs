@@ -11,11 +11,14 @@ namespace BehringerMonitor.ViewModels
         {
             OpenDataFolderCommand = new RelayCommand(OpenDataFolder);
             OpenGitHubCommand = new RelayCommand(OpenGitHub);
+            UpdateCommand = new RelayCommand(Update);
         }
 
         public ICommand OpenDataFolderCommand { get; }
 
         public ICommand OpenGitHubCommand { get; }
+
+        public ICommand UpdateCommand { get; }
 
         private void OpenDataFolder()
         {
@@ -28,6 +31,17 @@ namespace BehringerMonitor.ViewModels
             ProcessStartInfo psi = new ProcessStartInfo
             {
                 FileName = "https://github.com/omccully/BehringerMonitor",
+                UseShellExecute = true
+            };
+
+            Process.Start(psi);
+        }
+
+        public void Update()
+        {
+            ProcessStartInfo psi = new ProcessStartInfo
+            {
+                FileName = "https://github.com/omccully/BehringerMonitor/releases",
                 UseShellExecute = true
             };
 
