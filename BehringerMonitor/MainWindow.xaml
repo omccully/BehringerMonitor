@@ -13,6 +13,7 @@
         Title="Behringer Monitor" Height="700" Width="1000">
   <Window.Resources>
     <conveters:TypeToNameConverter x:Key="TypeToNameConverter"/>
+    <conveters:FloatToDbConverter x:Key="FloatToDbConverter"/>
     <DataTemplate DataType="{x:Type rules:RuleSelector}">
       <Border BorderBrush="Black" BorderThickness="1,1,1,1" CornerRadius="8,8,8,8" Padding="3,3,3,3"> 
         <StackPanel Orientation="Horizontal">
@@ -62,6 +63,9 @@
         <ComboBox ItemsSource="{x:Static rules:LevelRule.OperatorOptions}" SelectedValue="{Binding Operator, Mode=TwoWay}"></ComboBox>
         <TextBlock>Level:</TextBlock>
         <TextBox Text="{Binding Level}" MinWidth="50"></TextBox>
+        <TextBlock>(</TextBlock>
+        <TextBlock Text="{Binding Level, Converter={StaticResource FloatToDbConverter}}"></TextBlock>
+        <TextBlock>db)</TextBlock>
       </StackPanel>
     </DataTemplate>
     <DataTemplate DataType="{x:Type rules:MuteRule}">
@@ -161,6 +165,9 @@
         <StackPanel Orientation="Horizontal" Width="300">
           <TextBlock Text="Level:"></TextBlock>
           <TextBlock Text="{Binding Level}"></TextBlock>
+          <TextBlock Text="("></TextBlock>
+          <TextBlock Text="{Binding Level, Converter={StaticResource FloatToDbConverter}}"></TextBlock>
+          <TextBlock Text="db)"></TextBlock>
         </StackPanel>
         <StackPanel Orientation="Horizontal" Width="300">
           <TextBlock Text="Muted:"></TextBlock>
