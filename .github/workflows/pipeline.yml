@@ -31,23 +31,23 @@ jobs:
     - name: Publish WPF app
       run: dotnet publish BehringerMonitor\BehringerMonitor.csproj -c Release -o publish
 
-    - name: Zip published output
-      shell: pwsh
-      run: |
-        Compress-Archive -Path publish\* -DestinationPath BehringerMonitor.zip
-
     - name: Generate release tag
       id: tag
       shell: pwsh
       run: |
-        $tag = (Get-Date).ToUniversalTime().ToString("yyyyMMdd-HHmmss")
+        $tag = (Get-Date).ToUniversalTime().ToString("yyyy-MM-dd-HH-mm-ss")
         echo "tag=$tag" >> $env:GITHUB_OUTPUT
+
+    - name: Zip published output
+      shell: pwsh
+      run: |
+        Compress-Archive -Path publish\* -DestinationPath BehringerMonitor-${{ steps.tag.outputs.tag }}.zip
 
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v2
       with:
         tag_name: ${{ steps.tag.outputs.tag }}
         name: "Release ${{ steps.tag.outputs.tag }}"
-        files: BehringerMonitor.zip
+        files: "BehringerMonitor-${{ steps.tag.outputs.tag }}.zip"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
