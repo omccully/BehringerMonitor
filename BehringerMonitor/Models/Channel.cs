@@ -1,6 +1,8 @@
-﻿namespace BehringerMonitor.Models;
+﻿using BehringerMonitor.ViewModels;
 
-public class Channel : ISoundElement
+namespace BehringerMonitor.Models;
+
+public class Channel : ViewModelBase, ISoundElement
 {
     public Channel(int channelNumber)
     {
@@ -19,10 +21,12 @@ public class Channel : ISoundElement
 
     public float Fader
     {
-        get => field; set
+        get => field;
+        set
         {
-            Console.WriteLine($"Channel {ChannelNumber} fader to {value}");
             field = value;
+            NotifyPropertyChanged();
+            NotifyPropertyChanged(nameof(Level));
         }
     }
 
@@ -38,7 +42,15 @@ public class Channel : ISoundElement
         }
     }
 
-    public bool Muted { get; set; }
+    public bool Muted
+    {
+        get => field;
+        set
+        {
+            field = value;
+            NotifyPropertyChanged();
+        }
+    }
 
     public ChannelSend? TryGetSend(int sendNum)
     {

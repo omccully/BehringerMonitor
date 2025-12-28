@@ -7,6 +7,7 @@
         xmlns:viewmodels="clr-namespace:BehringerMonitor.ViewModels"
         xmlns:conveters="clr-namespace:BehringerMonitor.Converters"
         xmlns:rules="clr-namespace:BehringerMonitor.Rules"
+        xmlns:models="clr-namespace:BehringerMonitor.Models"
         xmlns:settings="clr-namespace:BehringerMonitor.Settings"
         mc:Ignorable="d"
         Title="Behringer Monitor" Height="700" Width="1000">
@@ -153,6 +154,20 @@
         </TextBox>
       </StackPanel>
     </DataTemplate>
+
+    <DataTemplate DataType="{x:Type models:ISoundElement}" x:Key="StateSoundElement">
+      <StackPanel Orientation="Horizontal">
+        <TextBlock Text="{Binding}" Width="200"></TextBlock>
+        <StackPanel Orientation="Horizontal" Width="300">
+          <TextBlock Text="Level:"></TextBlock>
+          <TextBlock Text="{Binding Level}"></TextBlock>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Width="300">
+          <TextBlock Text="Muted:"></TextBlock>
+          <TextBlock Text="{Binding Muted}"></TextBlock>
+        </StackPanel>
+      </StackPanel>
+    </DataTemplate>
   </Window.Resources>
   <DockPanel>
     <Menu DataContext="{Binding ToolBar}" DockPanel.Dock="Top">
@@ -241,6 +256,14 @@
             </StackPanel>
           </ScrollViewer>
         </DockPanel>
+      </TabItem>
+      <TabItem Header="State">
+        <ScrollViewer>
+          <StackPanel>
+            <ItemsControl ItemsSource="{Binding Soundboard.Channels}"  ItemTemplate="{StaticResource StateSoundElement}" />
+            <ItemsControl ItemsSource="{Binding Soundboard.Buses}"  ItemTemplate="{StaticResource StateSoundElement}" />
+          </StackPanel>
+        </ScrollViewer>
       </TabItem>
     </TabControl>
   </DockPanel>
