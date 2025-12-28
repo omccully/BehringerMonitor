@@ -28,6 +28,14 @@ jobs:
     - name: Test
       run: dotnet test --configuration Release --no-build --verbosity normal
 
+    - name: Publish WPF app
+      run: dotnet publish YourProject.csproj -c Release -o publish
+
+    - name: Zip published output
+      shell: pwsh
+      run: |
+        Compress-Archive -Path publish\* -DestinationPath app.zip
+
     - name: Generate release tag
       id: tag
       shell: pwsh
@@ -40,5 +48,6 @@ jobs:
       with:
         tag_name: ${{ steps.tag.outputs.tag }}
         name: "Release ${{ steps.tag.outputs.tag }}"
+        files: app.zip
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
