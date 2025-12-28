@@ -5,7 +5,6 @@ using BehringerMonitor.ViewModels;
 using System.Net.Sockets;
 using System.Text;
 using System.Windows;
-using System.Windows.Input;
 using System.Windows.Threading;
 
 namespace BehringerMonitor
@@ -58,7 +57,6 @@ namespace BehringerMonitor
             SettingsTab = new(new SettingsManager());
             SettingsTab.SettingsChanged += SettingsTab_SettingsChanged;
 
-            Debug = new MyCommand(this);
             Soundboard = new Soundboard();
             _updater = new SoundboardStateUpdater(Soundboard);
 
@@ -109,30 +107,6 @@ namespace BehringerMonitor
             {
                 field = value;
                 NotifyPropertyChanged();
-            }
-        }
-
-        public ICommand Debug { get; }
-
-        class MyCommand : ICommand
-        {
-            private object _parent;
-
-            public MyCommand(object parent)
-            {
-                _parent = parent;
-            }
-
-            public event EventHandler? CanExecuteChanged;
-
-            public bool CanExecute(object? parameter)
-            {
-                return true;
-            }
-
-            public void Execute(object? parameter)
-            {
-
             }
         }
 
