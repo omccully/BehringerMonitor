@@ -267,8 +267,9 @@
       <TabItem Header="State">
         <ScrollViewer>
           <StackPanel>
-            <ItemsControl ItemsSource="{Binding Soundboard.Channels}"  ItemTemplate="{StaticResource StateSoundElement}" />
-            <ItemsControl ItemsSource="{Binding Soundboard.Buses}"  ItemTemplate="{StaticResource StateSoundElement}" />
+            <ItemsControl ItemsSource="{Binding Soundboard.Channels}" ItemTemplate="{StaticResource StateSoundElement}" />
+            <ItemsControl ItemsSource="{Binding Soundboard.Buses}" ItemTemplate="{StaticResource StateSoundElement}" />
+            <ItemsControl ItemsSource="{Binding Soundboard.Sends}" ItemTemplate="{StaticResource StateSoundElement}" />
           </StackPanel>
         </ScrollViewer>
       </TabItem>

@@ -22,6 +22,20 @@ public class Soundboard
 
     public IEnumerable<Bus> Buses => _buses;
 
+    public IEnumerable<ChannelSend> Sends
+    {
+        get
+        {
+            foreach (var ch in Channels)
+            {
+                foreach (var send in ch.Sends)
+                {
+                    yield return send;
+                }
+            }
+        }
+    }
+
     public Channel? TryGetChannel(int channelNum)
     {
         if (channelNum > _channels.Count || channelNum <= 0)
