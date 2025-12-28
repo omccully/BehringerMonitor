@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".github/workflows/pipeline.yml" />
+  </Folder>
   <Project Path="BehringerMonitor.Tests/BehringerMonitor.Tests.csproj" />
   <Project Path="BehringerMonitor/BehringerMonitor.csproj" />
 </Solution>

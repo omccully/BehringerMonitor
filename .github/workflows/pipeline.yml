@@ -6,7 +6,7 @@ on:
 
 jobs:
   build-test-release:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
     - name: Checkout repository
@@ -28,7 +28,10 @@ jobs:
 
     - name: Generate release tag
       id: tag
-      run: echo "tag=$(date -u +'%Y%m%d-%H%M%S')" >> $GITHUB_OUTPUT
+      shell: pwsh
+      run: |
+        $tag = (Get-Date).ToUniversalTime().ToString("yyyyMMdd-HHmmss")
+        echo "tag=$tag" >> $env:GITHUB_OUTPUT
 
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v2
