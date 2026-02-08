@@ -52,8 +52,8 @@ jobs:
       with:
         tag_name: ${{ steps.tag.outputs.tag }}
         name: "Release ${{ steps.tag.outputs.tag }}"
-        files: 
-         - "BehringerMonitor-${{ steps.tag.outputs.tag }}.zip"
-         - "BehringerMonitor-${{ steps.tag.outputs.tag }}-self-contained.zip"
+        files: |
+         BehringerMonitor-${{ steps.tag.outputs.tag }}.zip
+         BehringerMonitor-${{ steps.tag.outputs.tag }}-self-contained.zip
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
