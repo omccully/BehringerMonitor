@@ -31,6 +31,9 @@ jobs:
     - name: Publish WPF app
       run: dotnet publish BehringerMonitor\BehringerMonitor.csproj -c Release -o publish
 
+    - name: Publish WPF app (self-contained)
+      run: dotnet publish BehringerMonitor\BehringerMonitor.csproj -c Release -o publish-self-contained -r win-x64 --self-contained true
+
     - name: Generate release tag
       id: tag
       shell: pwsh
@@ -42,12 +45,15 @@ jobs:
       shell: pwsh
       run: |
         Compress-Archive -Path publish\* -DestinationPath BehringerMonitor-${{ steps.tag.outputs.tag }}.zip
+        Compress-Archive -Path publish-self-contained\* -DestinationPath BehringerMonitor-${{ steps.tag.outputs.tag }}-self-contained.zip
 
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v2
       with:
         tag_name: ${{ steps.tag.outputs.tag }}
         name: "Release ${{ steps.tag.outputs.tag }}"
-        files: "BehringerMonitor-${{ steps.tag.outputs.tag }}.zip"
+        files: 
+         - "BehringerMonitor-${{ steps.tag.outputs.tag }}.zip"
+         - "BehringerMonitor-${{ steps.tag.outputs.tag }}-self-contained.zip"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
