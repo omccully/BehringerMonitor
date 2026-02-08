@@ -36,7 +36,7 @@ jobs:
       shell: pwsh
       run: |
         $tag = (Get-Date).ToUniversalTime().ToString("yyyy-MM-dd-HH-mm-ss")
-        echo "tag=$tag-portable" >> $env:GITHUB_OUTPUT
+        echo "tag=$tag" >> $env:GITHUB_OUTPUT
 
     - name: Zip published output
       shell: pwsh
@@ -47,7 +47,7 @@ jobs:
       uses: softprops/action-gh-release@v2
       with:
         tag_name: ${{ steps.tag.outputs.tag }}
-        name: "Release ${{ steps.tag.outputs.tag }}"
-        files: "BehringerMonitor-${{ steps.tag.outputs.tag }}.zip"
+        name: "Portable Release ${{ steps.tag.outputs.tag }}"
+        files: "BehringerMonitor-${{ steps.tag.outputs.tag }}-portable.zip"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
