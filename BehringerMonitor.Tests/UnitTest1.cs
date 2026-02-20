@@ -1,6 +1,7 @@
 ﻿using BehringerMonitor.Models;
 using BehringerMonitor.Service;
-using System.Security.Cryptography;
+using System.Reflection;
+using System.Text;
 
 namespace BehringerMonitor.Tests;
 
@@ -170,5 +171,30 @@ public class UnitTest1
         updater.Update(bytes);
         Bus bus = sb.GetBus(8);
         Assert.Equal(muted, bus.Muted);
+    }
+
+    [Fact]
+    public void DataFile()
+    {
+        using Stream? stream = Assembly.GetExecutingAssembly()
+            .GetManifestResourceStream("BehringerMonitor.Tests.TestData.2026-02-20-17-45-21.bin");
+
+        Assert.NotNull(stream);
+
+        byte[] bytes;
+        using (var memoryStream = new MemoryStream())
+        {
+            stream.CopyTo(memoryStream);
+            bytes = memoryStream.ToArray();
+        }
+
+        var sb = new Soundboard();
+        var updater = new SoundboardStateUpdater(sb);
+        updater.Update(bytes);
+
+        string str = Encoding.UTF8.GetString(updater.Buffer.ToArray());
+        Assert.Empty(updater.Buffer);
+        Assert.Equal(1.0, sb.GetChannel(5).Fader);
+        Assert.False(sb.GetChannel(5).Muted);
     }
 }

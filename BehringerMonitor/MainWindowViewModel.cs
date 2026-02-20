@@ -2,6 +2,7 @@
 using BehringerMonitor.Service;
 using BehringerMonitor.Settings;
 using BehringerMonitor.ViewModels;
+using System.IO;
 using System.Net.Sockets;
 using System.Text;
 using System.Windows;
@@ -9,7 +10,7 @@ using System.Windows.Threading;
 
 namespace BehringerMonitor
 {
-    public class MainWindowViewModel : ViewModelBase
+    public class MainWindowViewModel : ViewModelBase, IDisposable
     {
         private const int BehringerPort = 10023;
 
@@ -52,10 +53,18 @@ namespace BehringerMonitor
 
         public ToolbarViewModel ToolBar { get; } = new ToolbarViewModel();
 
+        private FileStream? _recordReceivedDataFs = null;
+
         public MainWindowViewModel()
         {
             SettingsTab = new(new SettingsManager());
             SettingsTab.SettingsChanged += SettingsTab_SettingsChanged;
+
+            if (SettingsTab.Settings.RecordAllReceivedData)
+            {
+                string path = Path.Combine(SettingsHelper.DataRecordFolderPath, DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss.bin"));
+                _recordReceivedDataFs = File.Create(path);
+            }
 
             Soundboard = new Soundboard();
             _updater = new SoundboardStateUpdater(Soundboard);
@@ -169,6 +178,12 @@ namespace BehringerMonitor
 
                     ReceivedPacketCount++;
 
+                    if (_recordReceivedDataFs != null)
+                    {
+                        _recordReceivedDataFs.Write(packet.Buffer, 0, packet.Buffer.Length);
+                        _recordReceivedDataFs.Flush();
+                    }
+
                     ReceivedMessageCount += _updater.Update(packet.Buffer);
 
                     List<SoundBoardWarning> warnings = new();
@@ -241,6 +256,15 @@ namespace BehringerMonitor
             int remaining = (4 - mod);
 
             return bytes.Concat(new byte[remaining]).ToArray();
+        }
+
+        public void Dispose()
+        {
+            if (_recordReceivedDataFs != null)
+            {
+                _recordReceivedDataFs.Flush();
+                _recordReceivedDataFs.Dispose();
+            }
         }
     }
 }

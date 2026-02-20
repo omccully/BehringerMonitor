@@ -38,6 +38,7 @@ namespace BehringerMonitor.ViewModels
             }
 
             IpAddress = Settings.IpAddress ?? string.Empty;
+            RecordAllReceivedData = Settings.RecordAllReceivedData;
             _settingsManager = settingsManager;
         }
 
@@ -47,12 +48,15 @@ namespace BehringerMonitor.ViewModels
 
         public string IpAddress { get; set; } = string.Empty;
 
+        public bool RecordAllReceivedData { get; set; }
+
         private void Save()
         {
             var newSettings = new BehringerMonitorSettings()
             {
                 IpAddress = IpAddress,
                 Rules = Rules.Where(r => r.HasEffect).ToList(),
+                RecordAllReceivedData = RecordAllReceivedData,
             };
 
             _settingsManager.SaveSettings(newSettings);

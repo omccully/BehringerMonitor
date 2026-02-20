@@ -25,6 +25,16 @@ namespace BehringerMonitor.Settings
             }
         }
 
+        public static string DataRecordFolderPath
+        {
+            get
+            {
+                string path = Path.Combine(DataFolderPath, "DataRecord");
+                Directory.CreateDirectory(path);
+                return path;
+            }
+        }
+
         //public static BehringerMonitorSettings? ReadSettings()
         //{
         //    string settingsFilePath = _settingsFilePath.Value;

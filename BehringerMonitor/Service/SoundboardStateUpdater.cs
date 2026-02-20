@@ -64,6 +64,8 @@ namespace BehringerMonitor.Service
                     string str = Encoding.UTF8.GetString(buffer.ToArray(), 0, i);
                     i++;
 
+                    bool messageRecognized = false;
+
 
                     // based on the prop message, it needs to process the rest of the message differently.
 
@@ -72,6 +74,7 @@ namespace BehringerMonitor.Service
                         buffer.RemoveRange(0, i);
                         i = 0;
                         processedMessageCount++;
+                        messageRecognized = true;
                     }
 
                     float? ReadFloat()
@@ -306,10 +309,15 @@ namespace BehringerMonitor.Service
 
                         FinishedMessage();
                     }
+
+                    if (!messageRecognized)
+                    {
+                        buffer.RemoveRange(0, i - 1);
+                    }
                 }
                 else
                 {
-
+                    buffer.RemoveAt(0);
                 }
             }
             while (previousBufferLength != buffer.Count);
@@ -325,6 +333,8 @@ namespace BehringerMonitor.Service
 
             return ProcessMessages(_buffer);
         }
+
+        public IReadOnlyList<byte> Buffer => _buffer;
 
 
         /// <summary>

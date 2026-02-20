@@ -257,6 +257,11 @@
                 <TextBox Width="200" Text="{Binding IpAddress, Mode=TwoWay}" />
               </StackPanel>
 
+              <StackPanel Orientation="Horizontal">
+                <TextBlock>Record all received data (for debugging)</TextBlock>
+                <CheckBox IsChecked="{Binding RecordAllReceivedData, Mode=TwoWay}" />
+              </StackPanel>
+
               <ItemsControl ItemsSource="{Binding Rules}">
               </ItemsControl>
               <Button Command="{Binding AddRuleCommand}">Add Rule</Button>
