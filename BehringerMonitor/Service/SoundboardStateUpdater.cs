@@ -52,13 +52,20 @@ namespace BehringerMonitor.Service
                 {
                     // beginning of a prop message
 
+                    bool foundNullTerminator = false;
                     int i = 0;
                     for (; i < buffer.Count; i++)
                     {
                         if (buffer[i] == 0)
                         {
+                            foundNullTerminator = true;
                             break;
                         }
+                    }
+
+                    if (!foundNullTerminator)
+                    {
+                        return processedMessageCount;
                     }
 
                     string str = Encoding.UTF8.GetString(buffer.ToArray(), 0, i);
