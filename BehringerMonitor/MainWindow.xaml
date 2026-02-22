@@ -278,6 +278,11 @@
           </StackPanel>
         </ScrollViewer>
       </TabItem>
+      <TabItem Header="Backup" DataContext="{Binding BackupTab}">
+        <StackPanel>
+          <TextBlock Text="{Binding Status}"></TextBlock>
+        </StackPanel>
+      </TabItem>
     </TabControl>
   </DockPanel>
   

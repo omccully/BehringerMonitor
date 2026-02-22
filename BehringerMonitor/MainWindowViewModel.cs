@@ -21,6 +21,8 @@ namespace BehringerMonitor
 
         public SettingsTabViewModel SettingsTab { get; }
 
+        public DriveBackupViewModel BackupTab { get; }
+
         public int ReceivedPacketCount
         {
             get => field;
@@ -57,6 +59,8 @@ namespace BehringerMonitor
 
         public MainWindowViewModel()
         {
+            BackupTab = new DriveBackupViewModel();
+
             SettingsTab = new(new SettingsManager());
             SettingsTab.SettingsChanged += SettingsTab_SettingsChanged;
 
@@ -265,6 +269,8 @@ namespace BehringerMonitor
                 _recordReceivedDataFs.Flush();
                 _recordReceivedDataFs.Dispose();
             }
+
+            BackupTab.Dispose();
         }
     }
 }
