@@ -16,8 +16,7 @@ namespace BehringerMonitor.ViewModels
 
         public DriveBackupViewModel(SettingsTabViewModel settingsTab)
         {
-            //Status = string.Empty;
-            Status = "test";
+            Status = string.Empty;
             _insertWatcher.EventArrived += DeviceInsertedEvent;
             _insertWatcher.Query = new WqlEventQuery(
                     "SELECT * FROM Win32_VolumeChangeEvent WHERE EventType = 2"); // 2 = Config change (insert)
@@ -105,6 +104,7 @@ namespace BehringerMonitor.ViewModels
                 {
                     await Dispatcher.CurrentDispatcher.InvokeAsync(() =>
                     {
+                        Status = $"Uploading X32 config from {folderPath}";
                         Uploading = true;
                     });
 
@@ -114,10 +114,7 @@ namespace BehringerMonitor.ViewModels
 
                     Task<Reference> mainRefTask = github.Git.Reference.Get("omccully", "X32-Config", "refs/heads/main");
 
-                    NewTree newTree = new()
-                    {
-
-                    };
+                    NewTree newTree = new();
 
                     List<NewNewBlob> blobs = new();
 
@@ -175,6 +172,7 @@ namespace BehringerMonitor.ViewModels
 
                     await Dispatcher.CurrentDispatcher.InvokeAsync(() =>
                     {
+                        Status = $"X32 config upload successful from {folderPath}";
                         Uploading = false;
                     });
 
