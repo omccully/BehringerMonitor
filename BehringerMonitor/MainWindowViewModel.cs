@@ -59,10 +59,10 @@ namespace BehringerMonitor
 
         public MainWindowViewModel()
         {
-            BackupTab = new DriveBackupViewModel();
-
             SettingsTab = new(new SettingsManager());
             SettingsTab.SettingsChanged += SettingsTab_SettingsChanged;
+
+            BackupTab = new DriveBackupViewModel(SettingsTab);
 
             if (SettingsTab.Settings.RecordAllReceivedData)
             {

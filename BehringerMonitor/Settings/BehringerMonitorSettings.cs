@@ -8,6 +8,8 @@ namespace BehringerMonitor.Settings
 
         public bool RecordAllReceivedData { get; set; }
 
+        public string? GitHubApiKey { get; set; }
+
         public IReadOnlyList<RuleSelector> Rules { get; set; } = new List<RuleSelector>();
     }
 }

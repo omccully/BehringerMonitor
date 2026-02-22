@@ -39,6 +39,7 @@ namespace BehringerMonitor.ViewModels
 
             IpAddress = Settings.IpAddress ?? string.Empty;
             RecordAllReceivedData = Settings.RecordAllReceivedData;
+            GitHubApiKey = Settings.GitHubApiKey ?? string.Empty;
             _settingsManager = settingsManager;
         }
 
@@ -47,6 +48,8 @@ namespace BehringerMonitor.ViewModels
         public ICommand AddRuleCommand { get; }
 
         public string IpAddress { get; set; } = string.Empty;
+
+        public string GitHubApiKey { get; set; } = string.Empty;
 
         public bool RecordAllReceivedData { get; set; }
 
@@ -57,6 +60,7 @@ namespace BehringerMonitor.ViewModels
                 IpAddress = IpAddress,
                 Rules = Rules.Where(r => r.HasEffect).ToList(),
                 RecordAllReceivedData = RecordAllReceivedData,
+                GitHubApiKey = GitHubApiKey,
             };
 
             _settingsManager.SaveSettings(newSettings);
