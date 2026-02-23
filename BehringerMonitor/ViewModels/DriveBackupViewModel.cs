@@ -5,6 +5,7 @@ using System.IO;
 using System.Management;
 using System.Windows;
 using System.Windows.Threading;
+using Application = System.Windows.Application;
 
 namespace BehringerMonitor.ViewModels
 {
@@ -50,7 +51,7 @@ namespace BehringerMonitor.ViewModels
             }
         }
 
-        private void DeviceInsertedEvent(object sender, EventArrivedEventArgs e)
+        private async void DeviceInsertedEvent(object sender, EventArrivedEventArgs e)
         {
             PropertyData? driveNameData = e.NewEvent.Properties.OfType<PropertyData>()
                 .FirstOrDefault(p => p.Name == "DriveName");
@@ -79,16 +80,22 @@ namespace BehringerMonitor.ViewModels
                         DateOnly folderDate = DateOnly.FromDateTime(folderDateTime.Value);
                         if (folderDate == today)
                         {
-                            Status = $"Found backup folder from today in connected drive {driveName}";
-                            foundFolder = true;
+                            await Application.Current.Dispatcher.InvokeAsync(async () =>
+                            {
+                                Status = $"Found backup folder from today in connected drive {driveName}";
+                                foundFolder = true;
 
-                            _ = UploadFolder(dir);
+                                await UploadFolder(dir);
+                            });
                         }
                     }
 
                     if (!foundFolder)
                     {
-                        Status = $"Did not find backup folder from today in connected drive {driveName}";
+                        await Application.Current.Dispatcher.InvokeAsync(() =>
+                        {
+                            Status = $"Did not find backup folder from today in connected drive {driveName}";
+                        });
                     }
                 }
             }
@@ -98,11 +105,12 @@ namespace BehringerMonitor.ViewModels
         {
             try
             {
+                string backupFolderName = Path.GetFileName(folderPath);
                 string? gitHubApiKey = _settingsTab.Settings.GitHubApiKey;
 
                 if (!string.IsNullOrWhiteSpace(gitHubApiKey))
                 {
-                    await Dispatcher.CurrentDispatcher.InvokeAsync(() =>
+                    await Application.Current.Dispatcher.InvokeAsync(() =>
                     {
                         Status = $"Uploading X32 config from {folderPath}";
                         Uploading = true;
@@ -166,11 +174,11 @@ namespace BehringerMonitor.ViewModels
                     Reference mainRef = await mainRefTask;
 
                     Commit commit = await github.Git.Commit.Create("omccully", "X32-Config", new NewCommit(
-                        $"Backup {DateTime.Now}", treeRef.Sha, mainRef.Object.Sha));
+                        $"Backup {DateTime.Now} - {backupFolderName}", treeRef.Sha, mainRef.Object.Sha));
 
                     await github.Git.Reference.Update("omccully", "X32-Config", mainRef.Ref, new ReferenceUpdate(commit.Sha));
 
-                    await Dispatcher.CurrentDispatcher.InvokeAsync(() =>
+                    await Application.Current.Dispatcher.InvokeAsync(() =>
                     {
                         Status = $"X32 config upload successful from {folderPath}";
                         Uploading = false;
