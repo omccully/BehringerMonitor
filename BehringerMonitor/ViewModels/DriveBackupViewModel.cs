@@ -17,13 +17,17 @@ namespace BehringerMonitor.ViewModels
 
         public DriveBackupViewModel(SettingsTabViewModel settingsTab)
         {
-            Status = string.Empty;
+            Status = "Insert USB drive with a X32 config backup from today to start a backup.";
+            CommitUrl = string.Empty;
             _insertWatcher.EventArrived += DeviceInsertedEvent;
             _insertWatcher.Query = new WqlEventQuery(
                     "SELECT * FROM Win32_VolumeChangeEvent WHERE EventType = 2"); // 2 = Config change (insert)
             _insertWatcher.Start();
             _settingsTab = settingsTab;
+            OpenCommitUrlCommand = new RelayCommand(OpenCommitUrl);
         }
+
+        public RelayCommand OpenCommitUrlCommand { get; }
 
         public string Status
         {
@@ -38,6 +42,20 @@ namespace BehringerMonitor.ViewModels
             }
         }
 
+        public string CommitUrl
+        {
+            get
+            {
+                return field;
+            }
+            set
+            {
+                field = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+
         public bool Uploading
         {
             get
@@ -49,6 +67,21 @@ namespace BehringerMonitor.ViewModels
                 field = value;
                 NotifyPropertyChanged();
             }
+        }
+
+        private void OpenCommitUrl()
+        {
+            if (string.IsNullOrWhiteSpace(CommitUrl))
+            {
+                return;
+            }
+
+            ProcessStartInfo psi = new ProcessStartInfo
+            {
+                FileName = CommitUrl,
+                UseShellExecute = true
+            };
+            Process.Start(psi);
         }
 
         private async void DeviceInsertedEvent(object sender, EventArrivedEventArgs e)
@@ -178,13 +211,15 @@ namespace BehringerMonitor.ViewModels
 
                     await github.Git.Reference.Update("omccully", "X32-Config", mainRef.Ref, new ReferenceUpdate(commit.Sha));
 
+                    string url = $"https://github.com/omccully/X32-Config/commit/{commit.Sha}";
+
                     await Application.Current.Dispatcher.InvokeAsync(() =>
                     {
                         Status = $"X32 config upload successful from {folderPath}";
                         Uploading = false;
+                        CommitUrl = url;
                     });
 
-                    string url = $"https://github.com/omccully/X32-Config/commit/{commit.Sha}";
                     ProcessStartInfo psi = new ProcessStartInfo
                     {
                         FileName = url,
