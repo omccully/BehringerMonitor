@@ -29,6 +29,19 @@ namespace BehringerMonitor.ViewModels
 
         public RelayCommand OpenCommitUrlCommand { get; }
 
+        public bool IsSelected
+        {
+            get
+            {
+                return field;
+            }
+            set
+            {
+                field = value;
+                NotifyPropertyChanged();
+            }
+        }
+
         public string Status
         {
             get
@@ -93,6 +106,11 @@ namespace BehringerMonitor.ViewModels
             {
                 if (driveNameData.Value is string driveName)
                 {
+                    if (!driveName.EndsWith("\\"))
+                    {
+                        driveName += "\\";
+                    }
+
                     DateOnly today = DateOnly.FromDateTime(DateTime.Now);
 
                     bool foundFolder = false;
@@ -115,6 +133,7 @@ namespace BehringerMonitor.ViewModels
                         {
                             await Application.Current.Dispatcher.InvokeAsync(async () =>
                             {
+                                IsSelected = true;
                                 Status = $"Found backup folder from today in connected drive {driveName}";
                                 foundFolder = true;
 
