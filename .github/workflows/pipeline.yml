@@ -38,7 +38,7 @@ jobs:
       run: echo $env:GITHUB_PATH
 
     - name: Build Installer
-      run: devenv.exe "BehringerMonitor.slnx" /build "Release" /project "BehringerMonitor.Setup\BehringerMonitor.Setup.vdproj"
+      run: devenv.exe "BehringerMonitor.sln" /build "Release" /project "BehringerMonitor.Installer\BehringerMonitor.Installer.vdproj"
 
     - name: Publish WPF app
       run: dotnet publish BehringerMonitor\BehringerMonitor.csproj -c Release -o publish
@@ -58,6 +58,7 @@ jobs:
       run: |
         Compress-Archive -Path publish\* -DestinationPath BehringerMonitor-${{ steps.tag.outputs.tag }}.zip
         Compress-Archive -Path publish-self-contained\* -DestinationPath BehringerMonitor-${{ steps.tag.outputs.tag }}-self-contained.zip
+        Compress-Archive -Path BehringerMonitor.Installer\Release\* -DestinationPath BehringerMonitor-${{ steps.tag.outputs.tag }}-installer.zip
 
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v2
@@ -67,5 +68,6 @@ jobs:
         files: |
          BehringerMonitor-${{ steps.tag.outputs.tag }}.zip
          BehringerMonitor-${{ steps.tag.outputs.tag }}-self-contained.zip
+         BehringerMonitor-${{ steps.tag.outputs.tag }}-installer.zip
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
