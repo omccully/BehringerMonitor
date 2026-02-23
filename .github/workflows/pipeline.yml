@@ -35,7 +35,7 @@ jobs:
           echo $devenv | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
     - name: Build Installer
-      run: devenv.com "BehringerMonitor.slnx" /build "Release" /project "BehringerMonitor.Setup\BehringerMonitor.Setup.vdproj"
+      run: devenv.exe "BehringerMonitor.slnx" /build "Release" /project "BehringerMonitor.Setup\BehringerMonitor.Setup.vdproj"
 
     - name: Publish WPF app
       run: dotnet publish BehringerMonitor\BehringerMonitor.csproj -c Release -o publish
