@@ -141,7 +141,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:BehringerMonitor"
         "ProductCode" = "8:{26CE3A78-E0BE-4D46-BA13-4AC0E9361A7D}"
-        "PackageCode" = "8:{94808314-0A01-464B-82E3-C6E0E86B16A0}"
+        "PackageCode" = "8:{E1408E7A-146A-40F6-964A-2F9F9EFDC022}"
         "UpgradeCode" = "8:{960702B2-AD0B-489E-9778-3B4FD485B227}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -712,6 +712,7 @@
             "OutputGroupCanonicalName" = "8:PublishItems"
             "OutputProjectGuid" = "8:{AF15582B-0C03-40B3-83E7-27913C93E252}"
             "ShowKeyOutput" = "11:TRUE"
+            "PublishProfilePath" = "8:Properties\\PublishProfiles\\FolderProfile.pubxml"
                 "ExcludeFilters"
                 {
                 }
