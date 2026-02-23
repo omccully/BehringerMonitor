@@ -28,6 +28,9 @@ jobs:
     - name: Test
       run: dotnet test --configuration Release --no-build --verbosity normal
 
+    - name: Build Installer
+      run: devenv.com "BehringerMonitor.slnx" /build "Release" /project "BehringerMonitor.Setup\BehringerMonitor.Setup.vdproj"
+
     - name: Publish WPF app
       run: dotnet publish BehringerMonitor\BehringerMonitor.csproj -c Release -o publish
 
