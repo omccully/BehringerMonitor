@@ -28,10 +28,10 @@ jobs:
     #- name: Test
      # run: dotnet test --configuration Release --no-build --verbosity normal
 
-    - name: Build Installer1
-      run: devenv.exe "BehringerMonitor.sln" /build "Release" /project "BehringerMonitor.Installer\BehringerMonitor.Installer.vdproj"
+    #- name: Build Installer1
+    #  run: devenv.exe "BehringerMonitor.sln" /build "Release" /project "BehringerMonitor.Installer\BehringerMonitor.Installer.vdproj"
 
-    - name: test
+    - name: Locate devenv
       run: |
           $devenv = & vswhere.exe '-property' productPath
           Write-Output "$devenv"
@@ -41,7 +41,7 @@ jobs:
       run: echo $env:GITHUB_PATH
 
     - name: Build Installer
-      run: devenv.exe "BehringerMonitor.sln" /build "Release" /project "BehringerMonitor.Installer\BehringerMonitor.Installer.vdproj"
+      run: devenv.com "BehringerMonitor.sln" /build "Release" /project "BehringerMonitor.Installer\BehringerMonitor.Installer.vdproj"
 
     - name: Publish WPF app
       run: dotnet publish BehringerMonitor\BehringerMonitor.csproj -c Release -o publish
