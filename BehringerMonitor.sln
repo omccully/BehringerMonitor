@@ -6,8 +6,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BehringerMonitor", "Behring
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BehringerMonitor.Tests", "BehringerMonitor.Tests\BehringerMonitor.Tests.csproj", "{F3FDBD6D-50A5-4402-841B-62D19C3534FE}"
 EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "BehringerMonitor.Setup", "BehringerMonitor.Setup\BehringerMonitor.Setup.vdproj", "{70B09026-69E3-35EC-44FE-F8B04779DC26}"
-EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "BehringerMonitor.Installer", "BehringerMonitor.Installer\BehringerMonitor.Installer.vdproj", "{1AD4DD34-B38D-8C32-CF40-BDF86F0D5A4F}"
 EndProject
 Global
@@ -24,8 +22,6 @@ Global
 		{F3FDBD6D-50A5-4402-841B-62D19C3534FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F3FDBD6D-50A5-4402-841B-62D19C3534FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F3FDBD6D-50A5-4402-841B-62D19C3534FE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{70B09026-69E3-35EC-44FE-F8B04779DC26}.Debug|Any CPU.ActiveCfg = Debug
-		{70B09026-69E3-35EC-44FE-F8B04779DC26}.Release|Any CPU.ActiveCfg = Release
 		{1AD4DD34-B38D-8C32-CF40-BDF86F0D5A4F}.Debug|Any CPU.ActiveCfg = Debug
 		{1AD4DD34-B38D-8C32-CF40-BDF86F0D5A4F}.Release|Any CPU.ActiveCfg = Release
 	EndGlobalSection

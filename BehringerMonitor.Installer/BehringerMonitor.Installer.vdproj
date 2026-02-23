@@ -37,6 +37,14 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+            }
         }
         "Release"
         {
@@ -53,6 +61,14 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+            }
         }
     }
     "Deployable"
@@ -261,34 +277,6 @@
         }
         "Shortcut"
         {
-            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_33381193B45B45F8B0AEC4FA297AB2D7"
-            {
-            "Name" = "8:BehringerMonitor"
-            "Arguments" = "8:"
-            "Description" = "8:"
-            "ShowCmd" = "3:1"
-            "IconIndex" = "3:0"
-            "Transitive" = "11:FALSE"
-            "Target" = "8:_A99CE389A81E422882B82400A8BFF673"
-            "Folder" = "8:_A2091BF672474338ADC1ED2D7C0FAF28"
-            "WorkingFolder" = "8:_AF5E4A4B515547B8A92938701FD3C211"
-            "Icon" = "8:"
-            "Feature" = "8:"
-            }
-            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_D8617BBADCA3433FAAA119D8684F15F1"
-            {
-            "Name" = "8:BehringerMonitor"
-            "Arguments" = "8:"
-            "Description" = "8:"
-            "ShowCmd" = "3:1"
-            "IconIndex" = "3:0"
-            "Transitive" = "11:FALSE"
-            "Target" = "8:_A99CE389A81E422882B82400A8BFF673"
-            "Folder" = "8:_8F06D01E365C4D68A0D4289058231E8A"
-            "WorkingFolder" = "8:_AF5E4A4B515547B8A92938701FD3C211"
-            "Icon" = "8:"
-            "Feature" = "8:"
-            }
         }
         "UserInterface"
         {
