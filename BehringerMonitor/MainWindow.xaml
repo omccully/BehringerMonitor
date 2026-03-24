@@ -53,9 +53,11 @@
         <ComboBox ItemsSource="{x:Static rules:TimeOfWeek.DayOfWeekOptions}" SelectedValue="{Binding DayOfWeek}"></ComboBox>
         <StackPanel Orientation="Horizontal">
           <TextBlock>Time:</TextBlock>
-          <TextBox Text="{Binding Hour}" />
+          <TextBox Text="{Binding Hour}" 
+                   Width="50" />
           <TextBlock>:</TextBlock>
-          <TextBox Text="{Binding Minute}" />
+          <TextBox Text="{Binding Minute}"
+                   Width="50" />
         </StackPanel>
       </StackPanel>
     </DataTemplate>

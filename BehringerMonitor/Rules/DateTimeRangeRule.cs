@@ -4,9 +4,9 @@ namespace BehringerMonitor.Rules
 {
     public class DateTimeRangeRule : EvaluatableRuleBase
     {
-        public required RuleSelector Rule { get; init; }
+        public RuleSelector Rule { get; set; } = new RuleSelector();
 
-        public required TimeOfWeekRange TimeRange { get; init; }
+        public TimeOfWeekRange TimeRange { get; set; } = new TimeOfWeekRange();
 
         public override bool HasEffect => throw new NotImplementedException();
 

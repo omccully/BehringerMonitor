@@ -2,9 +2,9 @@
 {
     public class TimeOfWeekRange : RuleBase
     {
-        public required TimeOfWeek StartTime { get; init; }
+        public TimeOfWeek StartTime { get; set; } = new();
 
-        public required TimeOfWeek EndTime { get; init; }
+        public TimeOfWeek EndTime { get; set; } = new();
 
         public override bool HasEffect => true;
 

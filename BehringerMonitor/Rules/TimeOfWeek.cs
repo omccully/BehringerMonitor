@@ -4,9 +4,9 @@ namespace BehringerMonitor.Rules
 {
     public class TimeOfWeek : RuleBase
     {
-        public required DayOfWeek DayOfWeek { get; set; }
+        public DayOfWeek DayOfWeek { get; set; }
 
-        public required TimeOnly Time { get; set; }
+        public TimeOnly Time { get; set; }
 
         public static IReadOnlyList<DayOfWeek> DayOfWeekOptions = Enum.GetValues<DayOfWeek>();
 
