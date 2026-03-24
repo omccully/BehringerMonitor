@@ -12,6 +12,7 @@ namespace BehringerMonitor.ViewModels
         public static IReadOnlyList<Type> BaseRuleTypes = new List<Type>()
         {
             typeof(SoundElementRule),
+            typeof(DateTimeRangeRule),
         };
         public event EventHandler<SettingsChangedEventArgs>? SettingsChanged;
 

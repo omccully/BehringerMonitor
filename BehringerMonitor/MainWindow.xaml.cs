@@ -17,6 +17,9 @@ public partial class MainWindow : Window, IDisposable
         InitializeComponent();
     }
 
+    public List<DayOfWeek> Days { get; } = Enum.GetValues(typeof(DayOfWeek))
+                       .Cast<DayOfWeek>()
+                       .ToList();
     private void PasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
     {
         PasswordBox pwBox = (PasswordBox)sender;

@@ -39,7 +39,34 @@
       </Border>
       
     </DataTemplate>
-
+    <DataTemplate DataType="{x:Type rules:TimeOfWeekRange}">
+      <StackPanel>
+        <TextBlock>Start Time:</TextBlock>
+        <ContentControl Content="{Binding StartTime}"/>
+        <TextBlock>End Time:</TextBlock>
+        <ContentControl Content="{Binding EndTime}"/>
+      </StackPanel>
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type rules:TimeOfWeek}">
+      <StackPanel>
+        <TextBlock>Day of Week:</TextBlock>
+        <ComboBox ItemsSource="{x:Static rules:TimeOfWeek.DayOfWeekOptions}" SelectedValue="{Binding DayOfWeek}"></ComboBox>
+        <StackPanel Orientation="Horizontal">
+          <TextBlock>Time:</TextBlock>
+          <TextBox Text="{Binding Hour}" />
+          <TextBlock>:</TextBlock>
+          <TextBox Text="{Binding Minute}" />
+        </StackPanel>
+      </StackPanel>
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type rules:DateTimeRangeRule}">
+      <StackPanel Orientation="Horizontal">
+        <TextBlock>Time Range:</TextBlock>
+        <ContentControl Content="{Binding TimeRange}"/>
+        <TextBlock>Rule:</TextBlock>
+        <ContentControl Content="{Binding Rule}"/>
+      </StackPanel>
+    </DataTemplate>
     <DataTemplate DataType="{x:Type rules:SoundElementRule}">
       <StackPanel Orientation="Horizontal">
         <ContentControl Content="{Binding SoundElementMatcher}"/>

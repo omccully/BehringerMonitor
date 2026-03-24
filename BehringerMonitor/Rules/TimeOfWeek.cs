@@ -1,11 +1,43 @@
-﻿namespace BehringerMonitor.Rules
+﻿using System.Text.Json.Serialization;
+
+namespace BehringerMonitor.Rules
 {
     public class TimeOfWeek : RuleBase
     {
-        public required DayOfWeek DayOfWeek { get; init; }
+        public required DayOfWeek DayOfWeek { get; set; }
 
-        public required TimeOnly Time { get; init; }
+        public required TimeOnly Time { get; set; }
 
+        public static IReadOnlyList<DayOfWeek> DayOfWeekOptions = Enum.GetValues<DayOfWeek>();
+
+        [JsonIgnore]
+        public int Hour
+        {
+            get
+            {
+                return Time.Hour;
+            }
+            set
+            {
+                Time = new TimeOnly(value, Time.Minute);
+                NotifyPropertyChanged();
+            }
+        }
+
+
+        [JsonIgnore]
+        public int Minute
+        {
+            get
+            {
+                return Time.Minute;
+            }
+            set
+            {
+                Time = new TimeOnly(Time.Hour, value);
+                NotifyPropertyChanged();
+            }
+        }
         public override bool HasEffect => true;
 
         public static TimeOfWeek FromCurrentTime(TimeProvider timeProvider)
