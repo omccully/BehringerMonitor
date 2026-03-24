@@ -1,10 +1,21 @@
 ﻿namespace BehringerMonitor.Rules
 {
-    public class TimeOfWeekRange
+    public class TimeOfWeekRange : RuleBase
     {
         public required TimeOfWeek StartTime { get; init; }
 
         public required TimeOfWeek EndTime { get; init; }
+
+        public override bool HasEffect => true;
+
+        public override RuleBase Clone()
+        {
+            return new TimeOfWeekRange()
+            {
+                StartTime = (TimeOfWeek)StartTime.Clone(),
+                EndTime = (TimeOfWeek)EndTime.Clone(),
+            };
+        }
 
         public bool IsInRange(TimeOfWeek timeOfWeek)
         {

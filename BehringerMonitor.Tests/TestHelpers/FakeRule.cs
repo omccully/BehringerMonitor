@@ -18,7 +18,13 @@ namespace BehringerMonitor.Tests.TestHelpers
 
         public override RuleBase Clone()
         {
-            throw new NotImplementedException();
+            var fr = new FakeRule()
+            {
+                ViolationMessages = ViolationMessages.ToList(),
+            };
+            fr.SetHasEffect(HasEffect);
+
+            return fr;
         }
 
         public override IEnumerable<string> GetViolationMessages(Soundboard soundBoard)

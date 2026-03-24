@@ -12,7 +12,11 @@ namespace BehringerMonitor.Rules
 
         public override RuleBase Clone()
         {
-            throw new NotImplementedException();
+            return new DateTimeRangeRule()
+            {
+                Rule = (RuleSelector)Rule.Clone(),
+                TimeRange = (TimeOfWeekRange)TimeRange.Clone(),
+            };
         }
 
         public override IEnumerable<string> GetViolationMessages(Soundboard soundBoard)
