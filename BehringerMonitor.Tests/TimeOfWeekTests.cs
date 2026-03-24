@@ -8,7 +8,7 @@ namespace BehringerMonitor.Tests
         [Theory]
         [InlineData(23, DayOfWeek.Monday)]
         [InlineData(22, DayOfWeek.Sunday)]
-        public void Test(int dayOfMonth, DayOfWeek dayOfWeek)
+        public void FromCurrentTime(int dayOfMonth, DayOfWeek dayOfWeek)
         {
             DateTimeOffset dto = new(
                 new DateTime(2026, 03, dayOfMonth, 07, 10, 20),
@@ -19,6 +19,42 @@ namespace BehringerMonitor.Tests
             Assert.Equal(10, tow.Time.Minute);
             Assert.Equal(20, tow.Time.Second);
             Assert.Equal(dayOfWeek, tow.DayOfWeek);
+        }
+
+        [Theory]
+        [InlineData(DayOfWeek.Sunday, 9, 15, false)]
+        [InlineData(DayOfWeek.Sunday, 10, 15, true)]
+        [InlineData(DayOfWeek.Monday, 10, 15, false)]
+        [InlineData(DayOfWeek.Sunday, 10, 45, false)]
+        public void IsInRange(DayOfWeek dayOfWeek, int hour, int minutes, bool expected)
+        {
+            var start = new TimeOfWeek()
+            {
+                DayOfWeek = DayOfWeek.Sunday,
+                Time = new TimeOnly(10, 00),
+            };
+
+            var end = new TimeOfWeek()
+            {
+                DayOfWeek = DayOfWeek.Sunday,
+                Time = new TimeOnly(10, 30),
+            };
+
+            var range = new TimeOfWeekRange()
+            {
+                StartTime = start,
+                EndTime = end,
+            };
+
+            var time = new TimeOfWeek()
+            {
+                DayOfWeek = dayOfWeek,
+                Time = new TimeOnly(hour, minutes),
+            };
+
+            bool actual = range.IsInRange(time);
+
+            Assert.Equal(expected, actual);
         }
     }
 }
