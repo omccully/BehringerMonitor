@@ -18,6 +18,8 @@ public class Soundboard
             }).ToList();
     }
 
+    public TimeProvider TimeProvider { get; set; } = TimeProvider.System;
+
     public IEnumerable<Channel> Channels => _channels;
 
     public IEnumerable<Bus> Buses => _buses;

@@ -1,4 +1,6 @@
-﻿using BehringerMonitor.Rules;
+﻿using BehringerMonitor.Models;
+using BehringerMonitor.Rules;
+using BehringerMonitor.Tests.TestHelpers;
 using Microsoft.Extensions.Time.Testing;
 
 namespace BehringerMonitor.Tests
@@ -55,6 +57,60 @@ namespace BehringerMonitor.Tests
             bool actual = range.IsInRange(time);
 
             Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [InlineData(22, 9, 15, false)]
+        [InlineData(22, 10, 15, true)]
+        [InlineData(23, 10, 15, false)]
+        [InlineData(22, 10, 45, false)]
+        public void DateTimeRangeRule_GetViolationMessages(int dayOfMonth, int hour, int minute, bool expected)
+        {
+            var fakeRule = new FakeRule();
+            fakeRule.SetHasEffect(true);
+            fakeRule.ViolationMessages = new List<string>()
+            {
+                "Test"
+            };
+
+            var dtrr = new DateTimeRangeRule()
+            {
+                TimeRange = new TimeOfWeekRange()
+                {
+                    StartTime = new TimeOfWeek()
+                    {
+                        DayOfWeek = DayOfWeek.Sunday,
+                        Time = new TimeOnly(10, 00),
+                    },
+                    EndTime = new TimeOfWeek()
+                    {
+                        DayOfWeek = DayOfWeek.Sunday,
+                        Time = new TimeOnly(10, 30),
+                    },
+                },
+
+                Rule = new RuleSelector()
+                {
+                    Rule = fakeRule,
+                }
+            };
+
+            var sb = new Soundboard();
+
+            DateTimeOffset dateTimeOffset = new(
+                    new DateTime(2026, 3, dayOfMonth, hour, minute, 00));
+            sb.TimeProvider = new FakeTimeProvider(dateTimeOffset);
+
+            var results = dtrr.GetViolationMessages(sb).ToList();
+
+            if (expected)
+            {
+                Assert.Equal("Test", Assert.Single(results));
+            }
+            else
+            {
+                Assert.Empty(results);
+            }
         }
     }
 }
