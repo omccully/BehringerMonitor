@@ -50,10 +50,10 @@
     </DataTemplate>
     <DataTemplate DataType="{x:Type rules:TimeOfWeek}">
       <StackPanel>
-        <TextBlock>Day of Week:</TextBlock>
+        <!--<TextBlock>Day of Week:</TextBlock>-->
         <ComboBox ItemsSource="{x:Static rules:TimeOfWeek.DayOfWeekOptions}" SelectedValue="{Binding DayOfWeek}"></ComboBox>
         <StackPanel Orientation="Horizontal">
-          <TextBlock>Time:</TextBlock>
+          <!--<TextBlock>Time:</TextBlock>-->
           <TextBox Text="{Binding Hour}" 
                    Width="30" />
           <TextBlock Padding="0,2,0,2">:</TextBlock>
@@ -67,9 +67,11 @@
     </DataTemplate>
     <DataTemplate DataType="{x:Type rules:DateTimeRangeRule}">
       <StackPanel Orientation="Horizontal">
-        <TextBlock>Time Range:</TextBlock>
-        <ContentControl Content="{Binding TimeRange}"/>
-        <TextBlock>Rule:</TextBlock>
+        <StackPanel Orientation="Vertical">
+          <TextBlock FontWeight="Bold">Time Range:</TextBlock>
+          <ContentControl Content="{Binding TimeRange}"/>
+        </StackPanel>
+        <!--<TextBlock>Rule:</TextBlock>-->
         <ContentControl Content="{Binding Rule}"/>
       </StackPanel>
     </DataTemplate>
@@ -184,11 +186,11 @@
 
     <DataTemplate DataType="{x:Type rules:SoundElementRange}">
       <StackPanel Orientation="Horizontal">
-        <TextBox Text="{Binding Start}" MinWidth="50">
+        <TextBox Text="{Binding Start}" MinWidth="35">
 
         </TextBox>
         <TextBlock>to</TextBlock>
-        <TextBox Text="{Binding End}" MinWidth="50">
+        <TextBox Text="{Binding End}" MinWidth="35">
 
         </TextBox>
       </StackPanel>
