@@ -1,4 +1,5 @@
 ﻿using BehringerMonitor.Models;
+using BehringerMonitor.ViewModels;
 
 namespace BehringerMonitor.Rules
 {
@@ -19,7 +20,7 @@ namespace BehringerMonitor.Rules
             };
         }
 
-        public override IEnumerable<string> GetViolationMessages(Soundboard soundBoard)
+        public override IEnumerable<SoundBoardWarning> GetViolationMessages(Soundboard soundBoard)
         {
             var currentTime = TimeOfWeek.FromCurrentTime(soundBoard.TimeProvider);
             if (TimeRange.IsInRange(currentTime))
@@ -28,7 +29,7 @@ namespace BehringerMonitor.Rules
             }
             else
             {
-                return Enumerable.Empty<string>();
+                return Enumerable.Empty<SoundBoardWarning>();
             }
         }
     }

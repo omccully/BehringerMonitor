@@ -222,14 +222,10 @@ namespace BehringerMonitor
 
             foreach (var rule in SettingsTab.Settings.Rules)
             {
-                foreach (string violationMessage in rule.GetViolationMessages(Soundboard))
+                foreach (SoundBoardWarning violationMessage in rule.GetViolationMessages(Soundboard))
                 {
-                    warnings.Add(new SoundBoardWarning()
-                    {
-                        Text = violationMessage,
-                        Level = SoundBoardWarningLevel.Critical,
-                    });
-                    errors.AppendLine(violationMessage);
+                    warnings.Add(violationMessage);
+                    errors.AppendLine(violationMessage.Text);
                 }
             }
 

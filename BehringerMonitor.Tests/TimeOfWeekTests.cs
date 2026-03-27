@@ -1,6 +1,7 @@
 ﻿using BehringerMonitor.Models;
 using BehringerMonitor.Rules;
 using BehringerMonitor.Tests.TestHelpers;
+using BehringerMonitor.ViewModels;
 using Microsoft.Extensions.Time.Testing;
 
 namespace BehringerMonitor.Tests
@@ -68,9 +69,13 @@ namespace BehringerMonitor.Tests
         {
             var fakeRule = new FakeRule();
             fakeRule.SetHasEffect(true);
-            fakeRule.ViolationMessages = new List<string>()
+            fakeRule.ViolationMessages = new List<SoundBoardWarning>()
             {
-                "Test"
+                new SoundBoardWarning()
+                {
+                    Text = "Test",
+                    Level = SoundBoardWarningLevel.Critical,
+                }
             };
 
             var dtrr = new DateTimeRangeRule()
@@ -105,7 +110,7 @@ namespace BehringerMonitor.Tests
 
             if (expected)
             {
-                Assert.Equal("Test", Assert.Single(results));
+                Assert.Equal("Test", Assert.Single(results).Text);
             }
             else
             {
@@ -118,9 +123,13 @@ namespace BehringerMonitor.Tests
         {
             var fakeRule = new FakeRule();
             fakeRule.SetHasEffect(true);
-            fakeRule.ViolationMessages = new List<string>()
+            fakeRule.ViolationMessages = new List<SoundBoardWarning>()
             {
-                "Test"
+                new SoundBoardWarning()
+                {
+                    Text = "Test",
+                    Level = SoundBoardWarningLevel.Critical,
+                }
             };
 
             var dtrr = new DateTimeRangeRule()
@@ -159,9 +168,13 @@ namespace BehringerMonitor.Tests
         {
             var fakeRule = new FakeRule();
             fakeRule.SetHasEffect(fakeRuleHasEffect);
-            fakeRule.ViolationMessages = new List<string>()
+            fakeRule.ViolationMessages = new List<SoundBoardWarning>()
             {
-                "Test"
+                new SoundBoardWarning()
+                {
+                    Text ="Test",
+                    Level = SoundBoardWarningLevel.Critical,
+                }
             };
 
             var dtrr = new DateTimeRangeRule()

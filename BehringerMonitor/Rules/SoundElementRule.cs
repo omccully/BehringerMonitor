@@ -1,4 +1,5 @@
 ﻿using BehringerMonitor.Models;
+using BehringerMonitor.ViewModels;
 using System.Collections.ObjectModel;
 using System.Text.Json.Serialization;
 using System.Windows.Input;
@@ -98,7 +99,7 @@ namespace BehringerMonitor.Rules
             };
         }
 
-        public override IEnumerable<string> GetViolationMessages(Soundboard soundBoard)
+        public override IEnumerable<SoundBoardWarning> GetViolationMessages(Soundboard soundBoard)
         {
             var eles = SoundElementMatcher.GetMatchingSoundElements(soundBoard).ToList();
             foreach (var ele in eles)
@@ -111,14 +112,22 @@ namespace BehringerMonitor.Rules
                         {
                             if (!ele.Muted)
                             {
-                                yield return $"Expected {ele} to be muted, but it is not.";
+                                yield return new SoundBoardWarning()
+                                {
+                                    Text = $"Expected {ele} to be muted, but it is not.",
+                                    Level = SoundBoardWarningLevel.Critical,
+                                };
                             }
                         }
                         else
                         {
                             if (ele.Muted)
                             {
-                                yield return $"Expected {ele} to be not muted, but it is.";
+                                yield return new SoundBoardWarning()
+                                {
+                                    Text = $"Expected {ele} to be not muted, but it is.",
+                                    Level = SoundBoardWarningLevel.Critical,
+                                };
                             }
                         }
                     }
@@ -133,14 +142,22 @@ namespace BehringerMonitor.Rules
                             case LevelOperator.LessThanOrEqualTo:
                                 if (ele.Level > levelRule.Level + _tolerance)
                                 {
-                                    yield return $"Expected {ele} to have a level less than {levelRule.Level}, but it is {ele.Level}";
+                                    yield return new SoundBoardWarning()
+                                    {
+                                        Text = $"Expected {ele} to have a level less than {levelRule.Level}, but it is {ele.Level}",
+                                        Level = SoundBoardWarningLevel.Critical,
+                                    };
                                 }
                                 break;
 
                             case LevelOperator.GreaterThanOrEqualTo:
                                 if (ele.Level < levelRule.Level - _tolerance)
                                 {
-                                    yield return $"Expected {ele} to have a level greater than {levelRule.Level}, but it is {ele.Level}";
+                                    yield return new SoundBoardWarning()
+                                    {
+                                        Text = $"Expected {ele} to have a level greater than {levelRule.Level}, but it is {ele.Level}",
+                                        Level = SoundBoardWarningLevel.Critical,
+                                    };
                                 }
                                 break;
                         }

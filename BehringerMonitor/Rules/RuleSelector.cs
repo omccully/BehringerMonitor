@@ -1,4 +1,5 @@
 ﻿using BehringerMonitor.Models;
+using BehringerMonitor.ViewModels;
 using System.Text.Json.Serialization;
 
 namespace BehringerMonitor.Rules
@@ -47,14 +48,14 @@ namespace BehringerMonitor.Rules
             };
         }
 
-        public override IEnumerable<string> GetViolationMessages(Soundboard soundBoard)
+        public override IEnumerable<SoundBoardWarning> GetViolationMessages(Soundboard soundBoard)
         {
             if (Rule != null)
             {
                 return Rule.GetViolationMessages(soundBoard);
             }
 
-            return Enumerable.Empty<string>();
+            return Enumerable.Empty<SoundBoardWarning>();
         }
     }
 }

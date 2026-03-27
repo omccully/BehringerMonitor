@@ -1,5 +1,6 @@
 ﻿using BehringerMonitor.Models;
 using BehringerMonitor.Rules;
+using BehringerMonitor.ViewModels;
 
 namespace BehringerMonitor.Tests.TestHelpers
 {
@@ -7,7 +8,7 @@ namespace BehringerMonitor.Tests.TestHelpers
     {
         private bool _hasEffect;
 
-        public List<string> ViolationMessages { get; set; } = new List<string>();
+        public List<SoundBoardWarning> ViolationMessages { get; set; } = new List<SoundBoardWarning>();
 
         public void SetHasEffect(bool hasEffect)
         {
@@ -27,7 +28,7 @@ namespace BehringerMonitor.Tests.TestHelpers
             return fr;
         }
 
-        public override IEnumerable<string> GetViolationMessages(Soundboard soundBoard)
+        public override IEnumerable<SoundBoardWarning> GetViolationMessages(Soundboard soundBoard)
         {
             return ViolationMessages;
         }
