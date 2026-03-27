@@ -316,13 +316,30 @@
         </DockPanel>
       </TabItem>
       <TabItem Header="State">
-        <ScrollViewer>
-          <StackPanel>
-            <ItemsControl ItemsSource="{Binding Soundboard.Channels}" ItemTemplate="{StaticResource StateSoundElement}" />
-            <ItemsControl ItemsSource="{Binding Soundboard.Buses}" ItemTemplate="{StaticResource StateSoundElement}" />
-            <ItemsControl ItemsSource="{Binding Soundboard.Sends}" ItemTemplate="{StaticResource StateSoundElement}" />
-          </StackPanel>
-        </ScrollViewer>
+        <TabControl>
+          <TabItem Header="Channels">
+            <ListBox ItemsSource="{Binding Soundboard.Channels}"
+               ItemTemplate="{StaticResource StateSoundElement}"
+               VirtualizingStackPanel.IsVirtualizing="True"
+               VirtualizingStackPanel.VirtualizationMode="Recycling"
+               ScrollViewer.CanContentScroll="True" />
+          </TabItem>
+          <TabItem Header="Buses">
+            <ListBox ItemsSource="{Binding Soundboard.Buses}"
+               ItemTemplate="{StaticResource StateSoundElement}"
+               VirtualizingStackPanel.IsVirtualizing="True"
+               VirtualizingStackPanel.VirtualizationMode="Recycling"
+               ScrollViewer.CanContentScroll="True" />
+          </TabItem>
+          <TabItem Header="Sends">
+            <ListBox ItemsSource="{Binding Soundboard.Sends}"
+               ItemTemplate="{StaticResource StateSoundElement}"
+               VirtualizingStackPanel.IsVirtualizing="True"
+               VirtualizingStackPanel.VirtualizationMode="Recycling"
+               ScrollViewer.CanContentScroll="True" />
+          </TabItem>
+        </TabControl>
+        
       </TabItem>
       <TabItem Header="X32 Backup" DataContext="{Binding BackupTab}" IsSelected="{Binding IsSelected}">
         <StackPanel HorizontalAlignment="Left">
