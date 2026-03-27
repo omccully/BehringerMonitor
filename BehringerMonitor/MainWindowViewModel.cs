@@ -16,6 +16,7 @@ namespace BehringerMonitor
 
         private SoundboardStateUpdater _updater;
         private UdpClient? _udpClient;
+        private object _warningsLock = new object();
 
         public Soundboard Soundboard { get; }
 
@@ -57,6 +58,8 @@ namespace BehringerMonitor
 
         private FileStream? _recordReceivedDataFs = null;
 
+        private Timer _warningUpdateTimer;
+
         public MainWindowViewModel()
         {
             SettingsTab = new(new SettingsManager());
@@ -77,6 +80,17 @@ namespace BehringerMonitor
             Result = string.Empty;
 
             InitializeUdpClientIfNot();
+
+            _warningUpdateTimer = new Timer(WarningUpdateCallback, null, 1, 5000);
+        }
+
+        private void WarningUpdateCallback(object? state)
+        {
+            // must lock for Soundboard
+            lock (_updater)
+            {
+                UpdateWarnings();
+            }
         }
 
         private void SettingsTab_SettingsChanged(object? sender, SettingsChangedEventArgs e)
@@ -188,58 +202,39 @@ namespace BehringerMonitor
                         _recordReceivedDataFs.Flush();
                     }
 
-                    ReceivedMessageCount += _updater.Update(packet.Buffer);
-
-                    List<SoundBoardWarning> warnings = new();
-                    StringBuilder errors = new StringBuilder();
-
-                    foreach (var rule in SettingsTab.Settings.Rules)
+                    lock (_updater)
                     {
-                        foreach (string violationMessage in rule.GetViolationMessages(Soundboard))
-                        {
-                            warnings.Add(new SoundBoardWarning()
-                            {
-                                Text = violationMessage,
-                                Level = SoundBoardWarningLevel.Critical,
-                            });
-                            errors.AppendLine(violationMessage);
-                        }
+                        ReceivedMessageCount += _updater.Update(packet.Buffer);
+                        UpdateWarnings();
                     }
-
-                    //for (int ch = 1; ch <= 32; ch++)
-                    //{
-                    //    Channel channel = Soundboard.GetChannel(ch);
-                    //    ChannelSend send = channel.GetSend(8);
-
-                    //    if (send.Muted)
-                    //    {
-                    //        warnings.Add(new SoundBoardWarning()
-                    //        {
-                    //            Text = $"ch{ch} is muted on send to bus {send.BusNumber}",
-                    //            Level = SoundBoardWarningLevel.Critical,
-                    //        });
-                    //        errors.AppendLine($"ch{ch} is muted on send to bus {send.BusNumber}");
-                    //    }
-
-                    //    if (send.Level < 0.25)
-                    //    {
-                    //        warnings.Add(new SoundBoardWarning()
-                    //        {
-                    //            Text = $"ch{ch} is a very low level to {send.BusNumber}",
-                    //            Level = SoundBoardWarningLevel.Critical,
-                    //        });
-                    //        errors.AppendLine($"ch{ch} is a very low level to {send.BusNumber}");
-                    //    }
-                    //}
-
-                    Warnings = warnings;
-                    Result = errors.ToString();
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Error occurred while sending messages: " + Environment.NewLine + ex);
             }
+        }
+
+        private void UpdateWarnings()
+        {
+            List<SoundBoardWarning> warnings = new();
+            StringBuilder errors = new StringBuilder();
+
+            foreach (var rule in SettingsTab.Settings.Rules)
+            {
+                foreach (string violationMessage in rule.GetViolationMessages(Soundboard))
+                {
+                    warnings.Add(new SoundBoardWarning()
+                    {
+                        Text = violationMessage,
+                        Level = SoundBoardWarningLevel.Critical,
+                    });
+                    errors.AppendLine(violationMessage);
+                }
+            }
+
+            Warnings = warnings;
+            Result = errors.ToString();
         }
 
         private static byte[] EncodeOscString(string str)
@@ -269,6 +264,8 @@ namespace BehringerMonitor
                 _recordReceivedDataFs.Flush();
                 _recordReceivedDataFs.Dispose();
             }
+
+            _warningUpdateTimer.Dispose();
 
             BackupTab.Dispose();
         }

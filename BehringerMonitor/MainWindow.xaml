@@ -17,27 +17,28 @@
     <conveters:NotNullToVisibilityConverter x:Key="NotNullToVisibilityConverter"/>
     <conveters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
     <DataTemplate DataType="{x:Type rules:RuleSelector}">
-      <Border BorderBrush="Black" BorderThickness="1,1,1,1" CornerRadius="8,8,8,8" Padding="3,3,3,3"> 
-        <StackPanel Orientation="Horizontal">
-          <StackPanel Width="200">
-            <ComboBox
+      <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Hidden">
+        <Border BorderBrush="Black" BorderThickness="1,1,1,1" CornerRadius="8,8,8,8" Padding="3,3,3,3">
+          <StackPanel Orientation="Horizontal">
+            <StackPanel Width="200">
+              <ComboBox
                 ItemsSource="{x:Static viewmodels:SettingsTabViewModel.BaseRuleTypes}"
                 SelectedItem="{Binding RuleType}"
                 MinWidth="100"
                 Text="Rule Type">
-              <ComboBox.ItemTemplate>
-                <DataTemplate>
-                  <TextBlock Text="{Binding Converter={StaticResource TypeToNameConverter}}"/>
-                </DataTemplate>
-              </ComboBox.ItemTemplate>
-            </ComboBox>
-            <TextBlock>Description:</TextBlock>
-            <TextBox Text="{Binding Description, Mode=TwoWay}" TextWrapping="Wrap"></TextBox>
+                <ComboBox.ItemTemplate>
+                  <DataTemplate>
+                    <TextBlock Text="{Binding Converter={StaticResource TypeToNameConverter}}"/>
+                  </DataTemplate>
+                </ComboBox.ItemTemplate>
+              </ComboBox>
+              <TextBlock>Description:</TextBlock>
+              <TextBox Text="{Binding Description, Mode=TwoWay}" TextWrapping="Wrap"></TextBox>
+            </StackPanel>
+            <ContentControl Content="{Binding Rule}"/>
           </StackPanel>
-          <ContentControl Content="{Binding Rule}"/>
-        </StackPanel>
-      </Border>
-      
+        </Border>
+      </ScrollViewer>
     </DataTemplate>
     <DataTemplate DataType="{x:Type rules:TimeOfWeekRange}">
       <StackPanel>
