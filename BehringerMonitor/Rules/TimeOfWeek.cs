@@ -19,7 +19,7 @@ namespace BehringerMonitor.Rules
             }
             set
             {
-                Time = new TimeOnly(value, Time.Minute);
+                Time = new TimeOnly(value, Time.Minute, Time.Second);
                 NotifyPropertyChanged();
             }
         }
@@ -34,7 +34,21 @@ namespace BehringerMonitor.Rules
             }
             set
             {
-                Time = new TimeOnly(Time.Hour, value);
+                Time = new TimeOnly(Time.Hour, value, Time.Second);
+                NotifyPropertyChanged();
+            }
+        }
+
+        [JsonIgnore]
+        public int Second
+        {
+            get
+            {
+                return Time.Second;
+            }
+            set
+            {
+                Time = new TimeOnly(Time.Hour, Time.Minute, value);
                 NotifyPropertyChanged();
             }
         }

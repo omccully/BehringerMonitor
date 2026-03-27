@@ -61,6 +61,49 @@ namespace BehringerMonitor.Tests
         }
 
         [Theory]
+        [InlineData(DayOfWeek.Sunday, 9, 15, 0, false)]
+        [InlineData(DayOfWeek.Sunday, 10, 15, 0, true)]
+        [InlineData(DayOfWeek.Sunday, 10, 29, 54, true)]
+        [InlineData(DayOfWeek.Sunday, 10, 29, 55, true)]
+        [InlineData(DayOfWeek.Sunday, 10, 29, 56, false)]
+        [InlineData(DayOfWeek.Monday, 10, 15, 0, false)]
+        [InlineData(DayOfWeek.Sunday, 10, 45, 0, false)]
+        public void IsInRange_Seconds(DayOfWeek dayOfWeek, int hour, int minutes, int seconds, bool expected)
+        {
+            var start = new TimeOfWeek()
+            {
+                DayOfWeek = DayOfWeek.Sunday,
+            };
+            start.Hour = 10;
+            start.Minute = 0;
+            start.Second = 0;
+
+            var end = new TimeOfWeek()
+            {
+                DayOfWeek = DayOfWeek.Sunday,
+            };
+            end.Hour = 10;
+            end.Minute = 29;
+            end.Second = 55;
+
+            var range = new TimeOfWeekRange()
+            {
+                StartTime = start,
+                EndTime = end,
+            };
+
+            var time = new TimeOfWeek()
+            {
+                DayOfWeek = dayOfWeek,
+                Time = new TimeOnly(hour, minutes, seconds),
+            };
+
+            bool actual = range.IsInRange(time);
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
         [InlineData(22, 9, 15, false)]
         [InlineData(22, 10, 15, true)]
         [InlineData(23, 10, 15, false)]

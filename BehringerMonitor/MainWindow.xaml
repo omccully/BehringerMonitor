@@ -55,10 +55,13 @@
         <StackPanel Orientation="Horizontal">
           <TextBlock>Time:</TextBlock>
           <TextBox Text="{Binding Hour}" 
-                   Width="50" />
-          <TextBlock>:</TextBlock>
+                   Width="30" />
+          <TextBlock Padding="0,2,0,2">:</TextBlock>
           <TextBox Text="{Binding Minute}"
-                   Width="50" />
+                   Width="30" />
+          <TextBlock Padding="0,2,0,2">:</TextBlock>
+          <TextBox Text="{Binding Second}"
+                  Width="30" />
         </StackPanel>
       </StackPanel>
     </DataTemplate>
