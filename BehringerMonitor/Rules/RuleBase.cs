@@ -7,6 +7,9 @@ namespace BehringerMonitor.Rules
     [JsonDerivedType(typeof(DateTimeRangeRule), nameof(DateTimeRangeRule))]
     public abstract class RuleBase : ViewModelBase
     {
+        /// <summary>
+        /// Determines if the rule is worth saving to the config.
+        /// </summary>
         [JsonIgnore]
         public abstract bool HasEffect { get; }
 

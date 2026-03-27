@@ -36,7 +36,7 @@ namespace BehringerMonitor.Rules
         public string Description { get; set; } = string.Empty;
 
         [JsonIgnore]
-        public override bool HasEffect => Rule != null;
+        public override bool HasEffect => Rule != null && Rule.HasEffect;
 
         public override RuleBase Clone()
         {

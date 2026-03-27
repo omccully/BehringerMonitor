@@ -8,7 +8,7 @@ namespace BehringerMonitor.Rules
 
         public TimeOfWeekRange TimeRange { get; set; } = new TimeOfWeekRange();
 
-        public override bool HasEffect => throw new NotImplementedException();
+        public override bool HasEffect => Rule.HasEffect;
 
         public override RuleBase Clone()
         {

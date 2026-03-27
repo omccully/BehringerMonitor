@@ -151,5 +151,42 @@ namespace BehringerMonitor.Tests
             Assert.Equal(dtrr.TimeRange.EndTime.DayOfWeek, cloned.TimeRange.EndTime.DayOfWeek);
 
         }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void DateTimeRangeRule_HasEffect(bool fakeRuleHasEffect)
+        {
+            var fakeRule = new FakeRule();
+            fakeRule.SetHasEffect(fakeRuleHasEffect);
+            fakeRule.ViolationMessages = new List<string>()
+            {
+                "Test"
+            };
+
+            var dtrr = new DateTimeRangeRule()
+            {
+                TimeRange = new TimeOfWeekRange()
+                {
+                    StartTime = new TimeOfWeek()
+                    {
+                        DayOfWeek = DayOfWeek.Sunday,
+                        Time = new TimeOnly(10, 00),
+                    },
+                    EndTime = new TimeOfWeek()
+                    {
+                        DayOfWeek = DayOfWeek.Sunday,
+                        Time = new TimeOnly(10, 30),
+                    },
+                },
+
+                Rule = new RuleSelector()
+                {
+                    Rule = fakeRule,
+                }
+            };
+
+            Assert.Equal(fakeRuleHasEffect, dtrr.HasEffect);
+        }
     }
 }
