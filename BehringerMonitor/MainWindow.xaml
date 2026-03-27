@@ -81,9 +81,10 @@
         <StackPanel Orientation="Vertical">
           <StackPanel Orientation="Horizontal">
             <TextBlock>Level Rule(s):</TextBlock>
-            <Button Command="{Binding AddRuleCommand}">Add level rule</Button>
-            <ItemsControl ItemsSource="{Binding LevelRules}">
-            </ItemsControl>
+            <StackPanel Orientation="Vertical">
+              <ItemsControl ItemsSource="{Binding LevelRules}" />
+              <Button Command="{Binding AddRuleCommand}" MaxWidth="100" HorizontalAlignment="Left">Add level rule</Button>
+            </StackPanel>
           </StackPanel>
           <StackPanel Orientation="Horizontal">
             <TextBlock>Mute Rule:</TextBlock>
@@ -96,7 +97,7 @@
     </DataTemplate>
     <DataTemplate DataType="{x:Type rules:LevelRule}">
       <StackPanel Orientation="Horizontal">
-        <TextBlock>Operator:</TextBlock>
+        <!--<TextBlock>Operator:</TextBlock>-->
         <ComboBox ItemsSource="{x:Static rules:LevelRule.OperatorOptions}" SelectedValue="{Binding Operator, Mode=TwoWay}"></ComboBox>
         <TextBlock>Level:</TextBlock>
         <TextBox Text="{Binding Level}" MinWidth="50"></TextBox>
