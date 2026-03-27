@@ -110,7 +110,10 @@ namespace BehringerMonitor.Tests
 
             if (expected)
             {
-                Assert.Equal("Test", Assert.Single(results).Text);
+                SoundBoardWarning warning = Assert.Single(results);
+                Assert.Equal("Test", warning.Text);
+                Assert.Contains("time", warning.Text, StringComparison.OrdinalIgnoreCase);
+                Assert.Equal(SoundBoardWarningLevel.Warning, warning.Level);
             }
             else
             {

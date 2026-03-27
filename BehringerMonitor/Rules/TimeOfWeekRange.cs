@@ -29,5 +29,15 @@
 
             return false;
         }
+
+        public override string ToString()
+        {
+            if (StartTime.DayOfWeek == EndTime.DayOfWeek)
+            {
+                return $"{StartTime.DayOfWeek} {StartTime.Time} to {EndTime.Time}";
+            }
+
+            return $"{StartTime} to {EndTime}";
+        }
     }
 }

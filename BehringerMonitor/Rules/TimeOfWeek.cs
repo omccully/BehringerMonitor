@@ -63,5 +63,10 @@ namespace BehringerMonitor.Rules
                 Time = Time,
             };
         }
+
+        public override string ToString()
+        {
+            return $"{DayOfWeek} {Time}";
+        }
     }
 }

@@ -25,11 +25,21 @@ namespace BehringerMonitor.Rules
             var currentTime = TimeOfWeek.FromCurrentTime(soundBoard.TimeProvider);
             if (TimeRange.IsInRange(currentTime))
             {
-                return Rule.GetViolationMessages(soundBoard);
+                foreach (var msg in Rule.GetViolationMessages(soundBoard))
+                {
+                    if (msg.Level == SoundBoardWarningLevel.Critical)
+                    {
+                        msg.Level = SoundBoardWarningLevel.Warning;
+                    }
+
+                    msg.Text = $"Currently within {TimeRange}: {msg.Text}";
+
+                    yield return msg;
+                }
             }
             else
             {
-                return Enumerable.Empty<SoundBoardWarning>();
+                yield break;
             }
         }
     }

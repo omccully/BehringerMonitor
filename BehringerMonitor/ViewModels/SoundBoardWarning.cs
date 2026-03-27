@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace BehringerMonitor.ViewModels
+﻿namespace BehringerMonitor.ViewModels
 {
     public class SoundBoardWarning
     {
-        public required string Text { get; init; }
-        
-        public required SoundBoardWarningLevel Level { get; init; }
+        public required string Text { get; set; }
+
+        public required SoundBoardWarningLevel Level { get; set; }
     }
 }
