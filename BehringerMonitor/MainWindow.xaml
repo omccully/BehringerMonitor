@@ -97,6 +97,19 @@
     </DataTemplate>
     <DataTemplate DataType="{x:Type rules:LevelRule}">
       <StackPanel Orientation="Horizontal">
+        <StackPanel.ContextMenu>
+          <ContextMenu 
+            DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
+
+            <MenuItem Header="Remove level rule"
+              Command="{Binding RemoveLevelRuleCommand}"
+               />
+            <!--CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}"-->
+            <!--<MenuItem Header="Remove level rule" 
+                      Command="{Binding DataContext.RemoveLevelRuleCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                      CommandParameter="{Binding}" />-->
+          </ContextMenu>
+        </StackPanel.ContextMenu>
         <!--<TextBlock>Operator:</TextBlock>-->
         <ComboBox ItemsSource="{x:Static rules:LevelRule.OperatorOptions}" SelectedValue="{Binding Operator, Mode=TwoWay}"></ComboBox>
         <TextBlock>Level:</TextBlock>

@@ -178,6 +178,19 @@ namespace BehringerMonitor.Tests
             }
         }
 
+        [Fact]
+        public void DeleteSoundLevelRule()
+        {
+            var ser = new SoundElementRule();
+            ser.AddRuleCommand.Execute(null);
+
+            var levelRule = ser.LevelRules.Single();
+
+            levelRule.RemoveLevelRuleCommand.Execute(null);
+
+            Assert.Empty(ser.LevelRules);
+        }
+
         private Soundboard CreateNeutralSoundboard()
         {
             var sb = new Soundboard();

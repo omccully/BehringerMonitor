@@ -14,6 +14,7 @@ namespace BehringerMonitor.Rules
         {
             SoundElementMatcher = new MultiSoundElementMatcher();
             AddRuleCommand = new RelayCommand(AddRule);
+            RemoveLevelRuleCommand = new RelayCommand(RemoveLevelRule);
         }
 
         public ICommand AddRuleCommand { get; }
@@ -24,7 +25,15 @@ namespace BehringerMonitor.Rules
 
         public ObservableCollection<LevelRule> LevelRules { get; set; } = new ObservableCollection<LevelRule>();
 
+        public ICommand RemoveLevelRuleCommand { get; set; }
 
+        private void RemoveLevelRule(object? obj)
+        {
+            if (obj is LevelRule levelRule)
+            {
+                LevelRules.Remove(levelRule);
+            }
+        }
 
         //public LevelRule? LevelRule
         //{

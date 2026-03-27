@@ -143,10 +143,10 @@ namespace BehringerMonitor.Service
 
                     if (channelFaderMatch.Success)
                     {
-                        Debug.WriteLine(str);
+                        //Debug.WriteLine(str);
 
                         string debug = string.Join(",", buffer.Skip(i));
-                        Debug.WriteLine(debug);
+                        //Debug.WriteLine(debug);
 
                         float? parseFloat = ReadFloat();
                         if (!parseFloat.HasValue)
@@ -335,7 +335,7 @@ namespace BehringerMonitor.Service
 
         public int Update(byte[] packet)
         {
-            Debug.WriteLine(string.Join(",", packet));
+            //Debug.WriteLine(string.Join(",", packet));
             _buffer.AddRange(packet);
 
             return ProcessMessages(_buffer);

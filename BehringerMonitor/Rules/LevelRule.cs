@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using System.Windows.Input;
 
 namespace BehringerMonitor.Rules
 {
@@ -10,6 +11,18 @@ namespace BehringerMonitor.Rules
         public float Level { get; set; }
 
         public static IReadOnlyList<LevelOperator> OperatorOptions = Enum.GetValues<LevelOperator>();
+
+        public LevelRule()
+        {
+            RemoveLevelRuleCommand = new RelayCommand(RemoveLevelRule);
+        }
+
+        public ICommand RemoveLevelRuleCommand { get; set; }
+
+        private void RemoveLevelRule()
+        {
+
+        }
 
         public override bool HasEffect => Operator != null;
 
