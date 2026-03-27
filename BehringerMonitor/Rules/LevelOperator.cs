@@ -1,8 +1,7 @@
-﻿namespace BehringerMonitor.Rules
+﻿namespace BehringerMonitor.Rules;
+
+public enum LevelOperator
 {
-    public enum LevelOperator
-    {
-        LessThanOrEqualTo,
-        GreaterThanOrEqualTo,
-    }
+    LessThanOrEqualTo,
+    GreaterThanOrEqualTo,
 }

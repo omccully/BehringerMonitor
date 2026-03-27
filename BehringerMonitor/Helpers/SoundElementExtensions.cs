@@ -1,20 +1,19 @@
 ﻿using BehringerMonitor.Models;
 
-namespace BehringerMonitor.Helpers
+namespace BehringerMonitor.Helpers;
+
+public static class SoundElementExtensions
 {
-    public static class SoundElementExtensions
+    const float _zeroDb = 0.7498f;
+
+    public static void SetToZeroDb(this ISoundElement soundElement)
     {
-        const float _zeroDb = 0.7498f;
+        soundElement.Level = _zeroDb;
+    }
 
-        public static void SetToZeroDb(this ISoundElement soundElement)
-        {
-            soundElement.Level = _zeroDb;
-        }
-
-        public static void OnAndNeutral(this ISoundElement soundElement)
-        {
-            soundElement.SetToZeroDb();
-            soundElement.Muted = false;
-        }
+    public static void OnAndNeutral(this ISoundElement soundElement)
+    {
+        soundElement.SetToZeroDb();
+        soundElement.Muted = false;
     }
 }

@@ -1,11 +1,10 @@
-﻿namespace BehringerMonitor.Helpers
+﻿namespace BehringerMonitor.Helpers;
+
+internal static class CollectionExtensions
 {
-    internal static class CollectionExtensions
+    public static IEnumerable<T> WhereNotNull<T>(IEnumerable<T?> e)
+        where T : class
     {
-        public static IEnumerable<T> WhereNotNull<T>(IEnumerable<T?> e)
-            where T : class
-        {
-            return e.Where(e => e != null)!;
-        }
+        return e.Where(e => e != null)!;
     }
 }

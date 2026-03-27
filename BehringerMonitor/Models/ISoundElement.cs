@@ -1,9 +1,8 @@
-﻿namespace BehringerMonitor.Models
-{
-    public interface ISoundElement
-    {
-        bool Muted { get; set; }
+﻿namespace BehringerMonitor.Models;
 
-        float Level { get; set; }
-    }
+public interface ISoundElement
+{
+    bool Muted { get; set; }
+
+    float Level { get; set; }
 }

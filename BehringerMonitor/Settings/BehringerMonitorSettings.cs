@@ -1,15 +1,14 @@
 ﻿using BehringerMonitor.Rules;
 
-namespace BehringerMonitor.Settings
+namespace BehringerMonitor.Settings;
+
+public class BehringerMonitorSettings
 {
-    public class BehringerMonitorSettings
-    {
-        public string? IpAddress { get; set; }
+    public string? IpAddress { get; set; }
 
-        public bool RecordAllReceivedData { get; set; }
+    public bool RecordAllReceivedData { get; set; }
 
-        public string? GitHubApiKey { get; set; }
+    public string? GitHubApiKey { get; set; }
 
-        public IReadOnlyList<RuleSelector> Rules { get; set; } = new List<RuleSelector>();
-    }
+    public IReadOnlyList<RuleSelector> Rules { get; set; } = new List<RuleSelector>();
 }

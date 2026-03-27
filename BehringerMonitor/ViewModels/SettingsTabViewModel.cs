@@ -3,77 +3,76 @@ using BehringerMonitor.Settings;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 
-namespace BehringerMonitor.ViewModels
+namespace BehringerMonitor.ViewModels;
+
+public class SettingsTabViewModel
 {
-    public class SettingsTabViewModel
+    private ISettingsManager _settingsManager;
+
+    public static IReadOnlyList<Type> BaseRuleTypes = new List<Type>()
     {
-        private ISettingsManager _settingsManager;
+        typeof(SoundElementRule),
+        typeof(DateTimeRangeRule),
+    };
+    public event EventHandler<SettingsChangedEventArgs>? SettingsChanged;
 
-        public static IReadOnlyList<Type> BaseRuleTypes = new List<Type>()
+    public BehringerMonitorSettings Settings { get; private set; }
+
+    public ObservableCollection<RuleSelector> Rules { get; }
+
+    public SettingsTabViewModel(ISettingsManager settingsManager)
+    {
+        SaveCommand = new RelayCommand(Save);
+        AddRuleCommand = new RelayCommand(AddRule);
+        _settingsManager = settingsManager;
+        Settings = _settingsManager.ReadSettings() ?? new BehringerMonitorSettings();
+
+        Rules = new ObservableCollection<RuleSelector>(
+            Settings.Rules.Select(r => r.Clone()).Cast<RuleSelector>());
+
+        if (!Rules.Any())
         {
-            typeof(SoundElementRule),
-            typeof(DateTimeRangeRule),
+            Rules.Add(new RuleSelector()
+            {
+                RuleType = typeof(SoundElementRule),
+            });
+        }
+
+        IpAddress = Settings.IpAddress ?? string.Empty;
+        RecordAllReceivedData = Settings.RecordAllReceivedData;
+        GitHubApiKey = Settings.GitHubApiKey ?? string.Empty;
+        _settingsManager = settingsManager;
+    }
+
+    public ICommand SaveCommand { get; }
+
+    public ICommand AddRuleCommand { get; }
+
+    public string IpAddress { get; set; } = string.Empty;
+
+    public string GitHubApiKey { get; set; } = string.Empty;
+
+    public bool RecordAllReceivedData { get; set; }
+
+    private void Save()
+    {
+        var newSettings = new BehringerMonitorSettings()
+        {
+            IpAddress = IpAddress,
+            Rules = Rules.Where(r => r.HasEffect).ToList(),
+            RecordAllReceivedData = RecordAllReceivedData,
+            GitHubApiKey = GitHubApiKey,
         };
-        public event EventHandler<SettingsChangedEventArgs>? SettingsChanged;
 
-        public BehringerMonitorSettings Settings { get; private set; }
+        _settingsManager.SaveSettings(newSettings);
 
-        public ObservableCollection<RuleSelector> Rules { get; }
+        Settings = newSettings;
+        SettingsChanged?.Invoke(this, new SettingsChangedEventArgs(newSettings));
+    }
 
-        public SettingsTabViewModel(ISettingsManager settingsManager)
-        {
-            SaveCommand = new RelayCommand(Save);
-            AddRuleCommand = new RelayCommand(AddRule);
-            _settingsManager = settingsManager;
-            Settings = _settingsManager.ReadSettings() ?? new BehringerMonitorSettings();
-
-            Rules = new ObservableCollection<RuleSelector>(
-                Settings.Rules.Select(r => r.Clone()).Cast<RuleSelector>());
-
-            if (!Rules.Any())
-            {
-                Rules.Add(new RuleSelector()
-                {
-                    RuleType = typeof(SoundElementRule),
-                });
-            }
-
-            IpAddress = Settings.IpAddress ?? string.Empty;
-            RecordAllReceivedData = Settings.RecordAllReceivedData;
-            GitHubApiKey = Settings.GitHubApiKey ?? string.Empty;
-            _settingsManager = settingsManager;
-        }
-
-        public ICommand SaveCommand { get; }
-
-        public ICommand AddRuleCommand { get; }
-
-        public string IpAddress { get; set; } = string.Empty;
-
-        public string GitHubApiKey { get; set; } = string.Empty;
-
-        public bool RecordAllReceivedData { get; set; }
-
-        private void Save()
-        {
-            var newSettings = new BehringerMonitorSettings()
-            {
-                IpAddress = IpAddress,
-                Rules = Rules.Where(r => r.HasEffect).ToList(),
-                RecordAllReceivedData = RecordAllReceivedData,
-                GitHubApiKey = GitHubApiKey,
-            };
-
-            _settingsManager.SaveSettings(newSettings);
-
-            Settings = newSettings;
-            SettingsChanged?.Invoke(this, new SettingsChangedEventArgs(newSettings));
-        }
-
-        private void AddRule()
-        {
-            Rules.Add(new RuleSelector());
-        }
+    private void AddRule()
+    {
+        Rules.Add(new RuleSelector());
     }
 }
 

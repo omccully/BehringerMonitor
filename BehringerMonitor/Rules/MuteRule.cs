@@ -1,17 +1,16 @@
-﻿namespace BehringerMonitor.Rules
+﻿namespace BehringerMonitor.Rules;
+
+public class MuteRule : RuleBase
 {
-    public class MuteRule : RuleBase
+    public bool? ExpectedMuted { get; set; }
+
+    public override bool HasEffect => ExpectedMuted.HasValue;
+
+    public override RuleBase Clone()
     {
-        public bool? ExpectedMuted { get; set; }
-
-        public override bool HasEffect => ExpectedMuted.HasValue;
-
-        public override RuleBase Clone()
+        return new MuteRule()
         {
-            return new MuteRule()
-            {
-                ExpectedMuted = ExpectedMuted,
-            };
-        }
+            ExpectedMuted = ExpectedMuted,
+        };
     }
 }

@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace BehringerMonitor.ViewModels
+namespace BehringerMonitor.ViewModels;
+
+public enum SoundBoardWarningLevel
 {
-    public enum SoundBoardWarningLevel
-    {
-        Warning,
-        Critical,
-    }
+    Warning,
+    Critical,
 }

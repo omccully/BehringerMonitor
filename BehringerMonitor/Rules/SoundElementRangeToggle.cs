@@ -1,46 +1,45 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace BehringerMonitor.Rules
+namespace BehringerMonitor.Rules;
+
+public class SoundElementRangeToggle : RuleBase
 {
-    public class SoundElementRangeToggle : RuleBase
+    public SoundElementRange? Range
     {
-        public SoundElementRange? Range
+        get => field;
+        set
         {
-            get => field;
-            set
+            field = value;
+            NotifyPropertyChanged();
+        }
+    }
+
+    [JsonIgnore]
+    public bool EnableRange
+    {
+        get => Range != null;
+        set
+        {
+            if (value && Range == null)
             {
-                field = value;
-                NotifyPropertyChanged();
+                Range = new SoundElementRange();
             }
-        }
-
-        [JsonIgnore]
-        public bool EnableRange
-        {
-            get => Range != null;
-            set
+            else if (!value && Range != null)
             {
-                if (value && Range == null)
-                {
-                    Range = new SoundElementRange();
-                }
-                else if (!value && Range != null)
-                {
-                    Range = null;
-                }
-
-                NotifyPropertyChanged();
+                Range = null;
             }
+
+            NotifyPropertyChanged();
         }
+    }
 
-        public override bool HasEffect => Range != null && Range.HasEffect;
+    public override bool HasEffect => Range != null && Range.HasEffect;
 
-        public override RuleBase Clone()
+    public override RuleBase Clone()
+    {
+        return new SoundElementRangeToggle()
         {
-            return new SoundElementRangeToggle()
-            {
-                Range = (SoundElementRange?)Range?.Clone(),
-            };
-        }
+            Range = (SoundElementRange?)Range?.Clone(),
+        };
     }
 }

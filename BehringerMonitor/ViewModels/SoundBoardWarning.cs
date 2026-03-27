@@ -1,9 +1,8 @@
-﻿namespace BehringerMonitor.ViewModels
-{
-    public class SoundBoardWarning
-    {
-        public required string Text { get; set; }
+﻿namespace BehringerMonitor.ViewModels;
 
-        public required SoundBoardWarningLevel Level { get; set; }
-    }
+public class SoundBoardWarning
+{
+    public required string Text { get; set; }
+
+    public required SoundBoardWarningLevel Level { get; set; }
 }

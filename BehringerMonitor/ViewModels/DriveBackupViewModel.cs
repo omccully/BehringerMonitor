@@ -7,274 +7,273 @@ using System.Windows;
 using System.Windows.Threading;
 using Application = System.Windows.Application;
 
-namespace BehringerMonitor.ViewModels
+namespace BehringerMonitor.ViewModels;
+
+public class DriveBackupViewModel : ViewModelBase, IDisposable
 {
-    public class DriveBackupViewModel : ViewModelBase, IDisposable
+    private ManagementEventWatcher _insertWatcher = new ManagementEventWatcher();
+
+    private SettingsTabViewModel _settingsTab;
+
+    public DriveBackupViewModel(SettingsTabViewModel settingsTab)
     {
-        private ManagementEventWatcher _insertWatcher = new ManagementEventWatcher();
+        Status = "Insert USB drive with a X32 config backup from today to start a backup.";
+        CommitUrl = string.Empty;
+        _insertWatcher.EventArrived += DeviceInsertedEvent;
+        _insertWatcher.Query = new WqlEventQuery(
+                "SELECT * FROM Win32_VolumeChangeEvent WHERE EventType = 2"); // 2 = Config change (insert)
+        _insertWatcher.Start();
+        _settingsTab = settingsTab;
+        OpenCommitUrlCommand = new RelayCommand(OpenCommitUrl);
+    }
 
-        private SettingsTabViewModel _settingsTab;
+    public RelayCommand OpenCommitUrlCommand { get; }
 
-        public DriveBackupViewModel(SettingsTabViewModel settingsTab)
+    public bool IsSelected
+    {
+        get
         {
-            Status = "Insert USB drive with a X32 config backup from today to start a backup.";
-            CommitUrl = string.Empty;
-            _insertWatcher.EventArrived += DeviceInsertedEvent;
-            _insertWatcher.Query = new WqlEventQuery(
-                    "SELECT * FROM Win32_VolumeChangeEvent WHERE EventType = 2"); // 2 = Config change (insert)
-            _insertWatcher.Start();
-            _settingsTab = settingsTab;
-            OpenCommitUrlCommand = new RelayCommand(OpenCommitUrl);
+            return field;
+        }
+        set
+        {
+            field = value;
+            NotifyPropertyChanged();
+        }
+    }
+
+    public string Status
+    {
+        get
+        {
+            return field;
+        }
+        set
+        {
+            field = value;
+            NotifyPropertyChanged();
+        }
+    }
+
+    public string CommitUrl
+    {
+        get
+        {
+            return field;
+        }
+        set
+        {
+            field = value;
+            NotifyPropertyChanged();
+        }
+    }
+
+
+    public bool Uploading
+    {
+        get
+        {
+            return field;
+        }
+        set
+        {
+            field = value;
+            NotifyPropertyChanged();
+        }
+    }
+
+    private void OpenCommitUrl()
+    {
+        if (string.IsNullOrWhiteSpace(CommitUrl))
+        {
+            return;
         }
 
-        public RelayCommand OpenCommitUrlCommand { get; }
-
-        public bool IsSelected
+        ProcessStartInfo psi = new ProcessStartInfo
         {
-            get
-            {
-                return field;
-            }
-            set
-            {
-                field = value;
-                NotifyPropertyChanged();
-            }
-        }
+            FileName = CommitUrl,
+            UseShellExecute = true
+        };
+        Process.Start(psi);
+    }
 
-        public string Status
+    private async void DeviceInsertedEvent(object sender, EventArrivedEventArgs e)
+    {
+        PropertyData? driveNameData = e.NewEvent.Properties.OfType<PropertyData>()
+            .FirstOrDefault(p => p.Name == "DriveName");
+
+        if (driveNameData != null)
         {
-            get
+            if (driveNameData.Value is string driveName)
             {
-                return field;
-            }
-            set
-            {
-                field = value;
-                NotifyPropertyChanged();
-            }
-        }
-
-        public string CommitUrl
-        {
-            get
-            {
-                return field;
-            }
-            set
-            {
-                field = value;
-                NotifyPropertyChanged();
-            }
-        }
-
-
-        public bool Uploading
-        {
-            get
-            {
-                return field;
-            }
-            set
-            {
-                field = value;
-                NotifyPropertyChanged();
-            }
-        }
-
-        private void OpenCommitUrl()
-        {
-            if (string.IsNullOrWhiteSpace(CommitUrl))
-            {
-                return;
-            }
-
-            ProcessStartInfo psi = new ProcessStartInfo
-            {
-                FileName = CommitUrl,
-                UseShellExecute = true
-            };
-            Process.Start(psi);
-        }
-
-        private async void DeviceInsertedEvent(object sender, EventArrivedEventArgs e)
-        {
-            PropertyData? driveNameData = e.NewEvent.Properties.OfType<PropertyData>()
-                .FirstOrDefault(p => p.Name == "DriveName");
-
-            if (driveNameData != null)
-            {
-                if (driveNameData.Value is string driveName)
+                if (!driveName.EndsWith("\\"))
                 {
-                    if (!driveName.EndsWith("\\"))
+                    driveName += "\\";
+                }
+
+                DateOnly today = DateOnly.FromDateTime(DateTime.Now);
+
+                bool foundFolder = false;
+                foreach (string dir in Directory.EnumerateDirectories(driveName))
+                {
+                    string? dirName = Path.GetFileName(dir);
+                    if (dirName == null)
                     {
-                        driveName += "\\";
+                        continue;
                     }
 
-                    DateOnly today = DateOnly.FromDateTime(DateTime.Now);
-
-                    bool foundFolder = false;
-                    foreach (string dir in Directory.EnumerateDirectories(driveName))
+                    DateTime? folderDateTime = X32BackupHelper.ParseFolderDateTime(dirName);
+                    if (!folderDateTime.HasValue)
                     {
-                        string? dirName = Path.GetFileName(dir);
-                        if (dirName == null)
-                        {
-                            continue;
-                        }
+                        continue;
+                    }
 
-                        DateTime? folderDateTime = X32BackupHelper.ParseFolderDateTime(dirName);
-                        if (!folderDateTime.HasValue)
+                    DateOnly folderDate = DateOnly.FromDateTime(folderDateTime.Value);
+                    if (folderDate == today)
+                    {
+                        await Application.Current.Dispatcher.InvokeAsync(async () =>
                         {
-                            continue;
-                        }
+                            IsSelected = true;
+                            Status = $"Found backup folder from today in connected drive {driveName}";
+                            foundFolder = true;
 
-                        DateOnly folderDate = DateOnly.FromDateTime(folderDateTime.Value);
-                        if (folderDate == today)
+                            await UploadFolder(dir);
+                        });
+                    }
+                }
+
+                if (!foundFolder)
+                {
+                    await Application.Current.Dispatcher.InvokeAsync(() =>
+                    {
+                        Status = $"Did not find backup folder from today in connected drive {driveName}";
+                    });
+                }
+            }
+        }
+    }
+
+    private async Task UploadFolder(string folderPath)
+    {
+        try
+        {
+            string backupFolderName = Path.GetFileName(folderPath);
+            string? gitHubApiKey = _settingsTab.Settings.GitHubApiKey;
+
+            if (!string.IsNullOrWhiteSpace(gitHubApiKey))
+            {
+                await Application.Current.Dispatcher.InvokeAsync(() =>
+                {
+                    Status = $"Uploading X32 config from {folderPath}";
+                    Uploading = true;
+                });
+
+                var github = new GitHubClient(new ProductHeaderValue("BehringerMonitor"));
+
+                github.Credentials = new Credentials(gitHubApiKey);
+
+                Task<Reference> mainRefTask = github.Git.Reference.Get("omccully", "X32-Config", "refs/heads/main");
+
+                NewTree newTree = new();
+
+                List<NewNewBlob> blobs = new();
+
+                using var sem = new SemaphoreSlim(5);
+
+                foreach (string file in Directory.EnumerateFiles(folderPath, "*", SearchOption.AllDirectories))
+                {
+                    Task<BlobReference> task = Task.Run(async () =>
+                    {
+                        await sem.WaitAsync();
+                        try
                         {
-                            await Application.Current.Dispatcher.InvokeAsync(async () =>
+                            return await github.Git.Blob.Create("omccully", "X32-Config", new()
                             {
-                                IsSelected = true;
-                                Status = $"Found backup folder from today in connected drive {driveName}";
-                                foundFolder = true;
-
-                                await UploadFolder(dir);
+                                Content = File.ReadAllText(file),
+                                Encoding = EncodingType.Utf8,
                             });
                         }
-                    }
-
-                    if (!foundFolder)
-                    {
-                        await Application.Current.Dispatcher.InvokeAsync(() =>
+                        finally
                         {
-                            Status = $"Did not find backup folder from today in connected drive {driveName}";
-                        });
-                    }
+                            sem.Release();
+                        }
+                    });
+
+                    blobs.Add(new NewNewBlob()
+                    {
+                        BlobRef = task,
+                        Path = file,
+                    });
                 }
-            }
-        }
 
-        private async Task UploadFolder(string folderPath)
-        {
-            try
-            {
-                string backupFolderName = Path.GetFileName(folderPath);
-                string? gitHubApiKey = _settingsTab.Settings.GitHubApiKey;
-
-                if (!string.IsNullOrWhiteSpace(gitHubApiKey))
+                foreach (var newBlob in blobs)
                 {
-                    await Application.Current.Dispatcher.InvokeAsync(() =>
+                    string relativePath = Path.GetRelativePath(folderPath, newBlob.Path).Replace("\\", "/");
+
+                    var blobRef = await newBlob.BlobRef;
+
+                    newTree.Tree.Add(new NewTreeItem()
                     {
-                        Status = $"Uploading X32 config from {folderPath}";
-                        Uploading = true;
+                        Mode = "100644",
+                        Type = TreeType.Blob,
+                        Path = relativePath,
+                        Sha = blobRef.Sha,
                     });
-
-                    var github = new GitHubClient(new ProductHeaderValue("BehringerMonitor"));
-
-                    github.Credentials = new Credentials(gitHubApiKey);
-
-                    Task<Reference> mainRefTask = github.Git.Reference.Get("omccully", "X32-Config", "refs/heads/main");
-
-                    NewTree newTree = new();
-
-                    List<NewNewBlob> blobs = new();
-
-                    using var sem = new SemaphoreSlim(5);
-
-                    foreach (string file in Directory.EnumerateFiles(folderPath, "*", SearchOption.AllDirectories))
-                    {
-                        Task<BlobReference> task = Task.Run(async () =>
-                        {
-                            await sem.WaitAsync();
-                            try
-                            {
-                                return await github.Git.Blob.Create("omccully", "X32-Config", new()
-                                {
-                                    Content = File.ReadAllText(file),
-                                    Encoding = EncodingType.Utf8,
-                                });
-                            }
-                            finally
-                            {
-                                sem.Release();
-                            }
-                        });
-
-                        blobs.Add(new NewNewBlob()
-                        {
-                            BlobRef = task,
-                            Path = file,
-                        });
-                    }
-
-                    foreach (var newBlob in blobs)
-                    {
-                        string relativePath = Path.GetRelativePath(folderPath, newBlob.Path).Replace("\\", "/");
-
-                        var blobRef = await newBlob.BlobRef;
-
-                        newTree.Tree.Add(new NewTreeItem()
-                        {
-                            Mode = "100644",
-                            Type = TreeType.Blob,
-                            Path = relativePath,
-                            Sha = blobRef.Sha,
-                        });
-                    }
-
-                    TreeResponse treeRef = await github.Git.Tree.Create("omccully", "X32-Config", newTree);
-
-                    Reference mainRef = await mainRefTask;
-
-                    Commit commit = await github.Git.Commit.Create("omccully", "X32-Config", new NewCommit(
-                        $"Backup {DateTime.Now} - {backupFolderName}", treeRef.Sha, mainRef.Object.Sha));
-
-                    await github.Git.Reference.Update("omccully", "X32-Config", mainRef.Ref, new ReferenceUpdate(commit.Sha));
-
-                    string url = $"https://github.com/omccully/X32-Config/commit/{commit.Sha}";
-
-                    await Application.Current.Dispatcher.InvokeAsync(() =>
-                    {
-                        Status = $"X32 config upload successful from {folderPath}";
-                        Uploading = false;
-                        CommitUrl = url;
-                    });
-
-                    ProcessStartInfo psi = new ProcessStartInfo
-                    {
-                        FileName = url,
-                        UseShellExecute = true
-                    };
-                    Process.Start(psi);
                 }
-                else
+
+                TreeResponse treeRef = await github.Git.Tree.Create("omccully", "X32-Config", newTree);
+
+                Reference mainRef = await mainRefTask;
+
+                Commit commit = await github.Git.Commit.Create("omccully", "X32-Config", new NewCommit(
+                    $"Backup {DateTime.Now} - {backupFolderName}", treeRef.Sha, mainRef.Object.Sha));
+
+                await github.Git.Reference.Update("omccully", "X32-Config", mainRef.Ref, new ReferenceUpdate(commit.Sha));
+
+                string url = $"https://github.com/omccully/X32-Config/commit/{commit.Sha}";
+
+                await Application.Current.Dispatcher.InvokeAsync(() =>
                 {
-                    Dispatcher.CurrentDispatcher.Invoke(() =>
-                    {
-                        Status = "No GitHub API key configured. Backup cannot be uploaded.";
-                    });
-                }
+                    Status = $"X32 config upload successful from {folderPath}";
+                    Uploading = false;
+                    CommitUrl = url;
+                });
+
+                ProcessStartInfo psi = new ProcessStartInfo
+                {
+                    FileName = url,
+                    UseShellExecute = true
+                };
+                Process.Start(psi);
             }
-            catch (Exception ex)
+            else
             {
                 Dispatcher.CurrentDispatcher.Invoke(() =>
                 {
-                    Status = "Error during backup: " + ex.Message;
+                    Status = "No GitHub API key configured. Backup cannot be uploaded.";
                 });
-                MessageBox.Show(ex.Message);
             }
         }
-
-        class NewNewBlob
+        catch (Exception ex)
         {
-            public required Task<BlobReference> BlobRef { get; init; }
-
-            public required string Path { get; init; }
+            Dispatcher.CurrentDispatcher.Invoke(() =>
+            {
+                Status = "Error during backup: " + ex.Message;
+            });
+            MessageBox.Show(ex.Message);
         }
+    }
 
-        public void Dispose()
-        {
-            _insertWatcher.Stop();
-            _insertWatcher.Dispose();
-        }
+    class NewNewBlob
+    {
+        public required Task<BlobReference> BlobRef { get; init; }
+
+        public required string Path { get; init; }
+    }
+
+    public void Dispose()
+    {
+        _insertWatcher.Stop();
+        _insertWatcher.Dispose();
     }
 }

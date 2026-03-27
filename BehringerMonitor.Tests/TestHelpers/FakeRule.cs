@@ -2,35 +2,34 @@
 using BehringerMonitor.Rules;
 using BehringerMonitor.ViewModels;
 
-namespace BehringerMonitor.Tests.TestHelpers
+namespace BehringerMonitor.Tests.TestHelpers;
+
+internal class FakeRule : EvaluatableRuleBase
 {
-    internal class FakeRule : EvaluatableRuleBase
+    private bool _hasEffect;
+
+    public List<SoundBoardWarning> ViolationMessages { get; set; } = new List<SoundBoardWarning>();
+
+    public void SetHasEffect(bool hasEffect)
     {
-        private bool _hasEffect;
+        _hasEffect = hasEffect;
+    }
 
-        public List<SoundBoardWarning> ViolationMessages { get; set; } = new List<SoundBoardWarning>();
+    public override bool HasEffect => _hasEffect;
 
-        public void SetHasEffect(bool hasEffect)
+    public override RuleBase Clone()
+    {
+        var fr = new FakeRule()
         {
-            _hasEffect = hasEffect;
-        }
+            ViolationMessages = ViolationMessages.ToList(),
+        };
+        fr.SetHasEffect(HasEffect);
 
-        public override bool HasEffect => _hasEffect;
+        return fr;
+    }
 
-        public override RuleBase Clone()
-        {
-            var fr = new FakeRule()
-            {
-                ViolationMessages = ViolationMessages.ToList(),
-            };
-            fr.SetHasEffect(HasEffect);
-
-            return fr;
-        }
-
-        public override IEnumerable<SoundBoardWarning> GetViolationMessages(Soundboard soundBoard)
-        {
-            return ViolationMessages;
-        }
+    public override IEnumerable<SoundBoardWarning> GetViolationMessages(Soundboard soundBoard)
+    {
+        return ViolationMessages;
     }
 }

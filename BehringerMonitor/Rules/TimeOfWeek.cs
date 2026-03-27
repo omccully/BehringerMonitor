@@ -1,86 +1,85 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace BehringerMonitor.Rules
+namespace BehringerMonitor.Rules;
+
+public class TimeOfWeek : RuleBase
 {
-    public class TimeOfWeek : RuleBase
+    public DayOfWeek DayOfWeek { get; set; }
+
+    public TimeOnly Time { get; set; }
+
+    public static IReadOnlyList<DayOfWeek> DayOfWeekOptions = Enum.GetValues<DayOfWeek>();
+
+    [JsonIgnore]
+    public int Hour
     {
-        public DayOfWeek DayOfWeek { get; set; }
-
-        public TimeOnly Time { get; set; }
-
-        public static IReadOnlyList<DayOfWeek> DayOfWeekOptions = Enum.GetValues<DayOfWeek>();
-
-        [JsonIgnore]
-        public int Hour
+        get
         {
-            get
-            {
-                return Time.Hour;
-            }
-            set
-            {
-                Time = new TimeOnly(value, Time.Minute, Time.Second);
-                NotifyPropertyChanged();
-            }
+            return Time.Hour;
         }
-
-
-        [JsonIgnore]
-        public int Minute
+        set
         {
-            get
-            {
-                return Time.Minute;
-            }
-            set
-            {
-                Time = new TimeOnly(Time.Hour, value, Time.Second);
-                NotifyPropertyChanged();
-            }
+            Time = new TimeOnly(value, Time.Minute, Time.Second);
+            NotifyPropertyChanged();
         }
+    }
 
-        [JsonIgnore]
-        public int Second
-        {
-            get
-            {
-                return Time.Second;
-            }
-            set
-            {
-                Time = new TimeOnly(Time.Hour, Time.Minute, value);
-                NotifyPropertyChanged();
-            }
-        }
-        public override bool HasEffect => true;
 
-        public static TimeOfWeek FromCurrentTime(TimeProvider timeProvider)
+    [JsonIgnore]
+    public int Minute
+    {
+        get
         {
-            var dateTime = timeProvider.GetLocalNow().DateTime;
-            return FromDateTime(dateTime);
+            return Time.Minute;
         }
+        set
+        {
+            Time = new TimeOnly(Time.Hour, value, Time.Second);
+            NotifyPropertyChanged();
+        }
+    }
 
-        public static TimeOfWeek FromDateTime(DateTime dateTime)
+    [JsonIgnore]
+    public int Second
+    {
+        get
         {
-            return new TimeOfWeek()
-            {
-                DayOfWeek = dateTime.DayOfWeek,
-                Time = TimeOnly.FromDateTime(dateTime),
-            };
+            return Time.Second;
         }
+        set
+        {
+            Time = new TimeOnly(Time.Hour, Time.Minute, value);
+            NotifyPropertyChanged();
+        }
+    }
+    public override bool HasEffect => true;
 
-        public override RuleBase Clone()
-        {
-            return new TimeOfWeek()
-            {
-                DayOfWeek = DayOfWeek,
-                Time = Time,
-            };
-        }
+    public static TimeOfWeek FromCurrentTime(TimeProvider timeProvider)
+    {
+        var dateTime = timeProvider.GetLocalNow().DateTime;
+        return FromDateTime(dateTime);
+    }
 
-        public override string ToString()
+    public static TimeOfWeek FromDateTime(DateTime dateTime)
+    {
+        return new TimeOfWeek()
         {
-            return $"{DayOfWeek} {Time}";
-        }
+            DayOfWeek = dateTime.DayOfWeek,
+            Time = TimeOnly.FromDateTime(dateTime),
+        };
+    }
+
+    public override RuleBase Clone()
+    {
+        return new TimeOfWeek()
+        {
+            DayOfWeek = DayOfWeek,
+            Time = Time,
+        };
+    }
+
+    public override string ToString()
+    {
+        return $"{DayOfWeek} {Time}";
     }
 }

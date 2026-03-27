@@ -4,88 +4,87 @@ using BehringerMonitor.ViewModels;
 using System.Collections.ObjectModel;
 using System.Text.Json;
 
-namespace BehringerMonitor.Tests
+namespace BehringerMonitor.Tests;
+
+public class RuleSerializationTests
 {
-    public class RuleSerializationTests
+    [Fact]
+    public void Serialize_SoundElementRule()
     {
-        [Fact]
-        public void Serialize_SoundElementRule()
+        var settingsManager = new TestSettingsManager();
+        var vm = new SettingsTabViewModel(settingsManager);
+
+        const string ipAddress = "10.1.2.3";
+        vm.IpAddress = ipAddress;
+
+        var singleRule = Assert.Single(vm.Rules);
+        singleRule.RuleType = typeof(SoundElementRule);
+
+        SoundElementRule ser = Assert.IsType<SoundElementRule>(singleRule.Rule);
+
+        var includeMatcher = Assert.Single(ser.SoundElementMatcher.IncludedRanges);
+
+        includeMatcher.ChannelRange.EnableRange = true;
+
+        Assert.NotNull(includeMatcher.ChannelRange.Range);
+
+        includeMatcher.ChannelRange.Range.Start = 2;
+        includeMatcher.ChannelRange.Range.End = 5;
+
+        ser.LevelRules = new ObservableCollection<LevelRule>()
         {
-            var settingsManager = new TestSettingsManager();
-            var vm = new SettingsTabViewModel(settingsManager);
-
-            const string ipAddress = "10.1.2.3";
-            vm.IpAddress = ipAddress;
-
-            var singleRule = Assert.Single(vm.Rules);
-            singleRule.RuleType = typeof(SoundElementRule);
-
-            SoundElementRule ser = Assert.IsType<SoundElementRule>(singleRule.Rule);
-
-            var includeMatcher = Assert.Single(ser.SoundElementMatcher.IncludedRanges);
-
-            includeMatcher.ChannelRange.EnableRange = true;
-
-            Assert.NotNull(includeMatcher.ChannelRange.Range);
-
-            includeMatcher.ChannelRange.Range.Start = 2;
-            includeMatcher.ChannelRange.Range.End = 5;
-
-            ser.LevelRules = new ObservableCollection<LevelRule>()
+            new LevelRule()
             {
-                new LevelRule()
-                {
-                    Level = 0.5f,
-                    Operator = LevelOperator.LessThanOrEqualTo,
-                }
-            };
+                Level = 0.5f,
+                Operator = LevelOperator.LessThanOrEqualTo,
+            }
+        };
 
-            vm.SaveCommand.Execute(null);
+        vm.SaveCommand.Execute(null);
 
-            var newVm = new SettingsTabViewModel(settingsManager);
+        var newVm = new SettingsTabViewModel(settingsManager);
 
-            Assert.Equal(ipAddress, newVm.IpAddress);
-            RuleSelector firstRuleSelector = newVm.Settings.Rules.First();
-            Assert.Equal(typeof(SoundElementRule), firstRuleSelector.RuleType);
-            var firstRule = firstRuleSelector.Rule;
-            var resultSer = Assert.IsType<SoundElementRule>(firstRule);
-            var resultIncludedRange = resultSer.SoundElementMatcher.IncludedRanges.First();
+        Assert.Equal(ipAddress, newVm.IpAddress);
+        RuleSelector firstRuleSelector = newVm.Settings.Rules.First();
+        Assert.Equal(typeof(SoundElementRule), firstRuleSelector.RuleType);
+        var firstRule = firstRuleSelector.Rule;
+        var resultSer = Assert.IsType<SoundElementRule>(firstRule);
+        var resultIncludedRange = resultSer.SoundElementMatcher.IncludedRanges.First();
 
-            Assert.Equal(2, resultIncludedRange.ChannelRange.Range!.Start);
-            Assert.Equal(5, resultIncludedRange.ChannelRange.Range!.End);
+        Assert.Equal(2, resultIncludedRange.ChannelRange.Range!.Start);
+        Assert.Equal(5, resultIncludedRange.ChannelRange.Range!.End);
 
-            var firstRuleView = newVm.Rules.First().Rule;
-            var resultSerView = Assert.IsType<SoundElementRule>(firstRuleView);
-            var resultIncludedRangeView = resultSerView.SoundElementMatcher.IncludedRanges.First();
-            Assert.Equal(2, resultIncludedRangeView.ChannelRange.Range!.Start);
-            Assert.Equal(5, resultIncludedRangeView.ChannelRange.Range!.End);
+        var firstRuleView = newVm.Rules.First().Rule;
+        var resultSerView = Assert.IsType<SoundElementRule>(firstRuleView);
+        var resultIncludedRangeView = resultSerView.SoundElementMatcher.IncludedRanges.First();
+        Assert.Equal(2, resultIncludedRangeView.ChannelRange.Range!.Start);
+        Assert.Equal(5, resultIncludedRangeView.ChannelRange.Range!.End);
 
-            Assert.NotSame(newVm.Settings.Rules, newVm.Rules);
-            Assert.NotSame(resultSerView, resultSer);
-            Assert.NotSame(resultIncludedRangeView, resultIncludedRange);
-            Assert.NotSame(resultIncludedRangeView.ChannelRange, resultIncludedRange.ChannelRange);
-            Assert.NotSame(resultIncludedRangeView.ChannelRange.Range, resultIncludedRange.ChannelRange.Range);
+        Assert.NotSame(newVm.Settings.Rules, newVm.Rules);
+        Assert.NotSame(resultSerView, resultSer);
+        Assert.NotSame(resultIncludedRangeView, resultIncludedRange);
+        Assert.NotSame(resultIncludedRangeView.ChannelRange, resultIncludedRange.ChannelRange);
+        Assert.NotSame(resultIncludedRangeView.ChannelRange.Range, resultIncludedRange.ChannelRange.Range);
+    }
+
+    private class TestSettingsManager : ISettingsManager
+    {
+        private string? _currentVal;
+
+        public BehringerMonitorSettings? ReadSettings()
+        {
+            if (_currentVal != null)
+            {
+                var result = JsonSerializer.Deserialize<BehringerMonitorSettings>(_currentVal);
+                return result;
+            }
+            return null;
         }
 
-        private class TestSettingsManager : ISettingsManager
+        public void SaveSettings(BehringerMonitorSettings settings)
         {
-            private string? _currentVal;
-
-            public BehringerMonitorSettings? ReadSettings()
-            {
-                if (_currentVal != null)
-                {
-                    var result = JsonSerializer.Deserialize<BehringerMonitorSettings>(_currentVal);
-                    return result;
-                }
-                return null;
-            }
-
-            public void SaveSettings(BehringerMonitorSettings settings)
-            {
-                string jsonText = JsonSerializer.Serialize(settings);
-                _currentVal = jsonText;
-            }
+            string jsonText = JsonSerializer.Serialize(settings);
+            _currentVal = jsonText;
         }
     }
 }

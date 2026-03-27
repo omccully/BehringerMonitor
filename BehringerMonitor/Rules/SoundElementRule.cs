@@ -4,176 +4,175 @@ using System.Collections.ObjectModel;
 using System.Text.Json.Serialization;
 using System.Windows.Input;
 
-namespace BehringerMonitor.Rules
+namespace BehringerMonitor.Rules;
+
+public class SoundElementRule : EvaluatableRuleBase
 {
-    public class SoundElementRule : EvaluatableRuleBase
+    private const float _tolerance = 0.001f;
+
+    public SoundElementRule()
     {
-        private const float _tolerance = 0.001f;
+        SoundElementMatcher = new MultiSoundElementMatcher();
+        AddRuleCommand = new RelayCommand(AddRule);
+        RemoveLevelRuleCommand = new RelayCommand(RemoveLevelRule);
+    }
 
-        public SoundElementRule()
+    public ICommand AddRuleCommand { get; }
+
+    public override bool HasEffect => SoundElementMatcher.HasEffect && (LevelRules.Any(lr => lr.HasEffect) || MuteRule?.HasEffect == true);
+
+    public MultiSoundElementMatcher SoundElementMatcher { get; set; }
+
+    public ObservableCollection<LevelRule> LevelRules { get; set; } = new ObservableCollection<LevelRule>();
+
+    public ICommand RemoveLevelRuleCommand { get; set; }
+
+    private void RemoveLevelRule(object? obj)
+    {
+        if (obj is LevelRule levelRule)
         {
-            SoundElementMatcher = new MultiSoundElementMatcher();
-            AddRuleCommand = new RelayCommand(AddRule);
-            RemoveLevelRuleCommand = new RelayCommand(RemoveLevelRule);
+            LevelRules.Remove(levelRule);
         }
+    }
 
-        public ICommand AddRuleCommand { get; }
+    //public LevelRule? LevelRule
+    //{
+    //    get => field;
+    //    set
+    //    {
+    //        field = value;
+    //        NotifyPropertyChanged();
+    //    }
+    //}
 
-        public override bool HasEffect => SoundElementMatcher.HasEffect && (LevelRules.Any(lr => lr.HasEffect) || MuteRule?.HasEffect == true);
+    //[JsonIgnore]
+    //public bool LevelRuleEnabled
+    //{
+    //    get => LevelRule != null;
+    //    set
+    //    {
+    //        if (value && LevelRule == null)
+    //        {
+    //            LevelRule = new LevelRule();
+    //        }
+    //        else if (!value && LevelRule != null)
+    //        {
+    //            LevelRule = null;
+    //        }
 
-        public MultiSoundElementMatcher SoundElementMatcher { get; set; }
+    //        NotifyPropertyChanged();
+    //    }
+    //}
 
-        public ObservableCollection<LevelRule> LevelRules { get; set; } = new ObservableCollection<LevelRule>();
-
-        public ICommand RemoveLevelRuleCommand { get; set; }
-
-        private void RemoveLevelRule(object? obj)
+    public MuteRule? MuteRule
+    {
+        get => field;
+        set
         {
-            if (obj is LevelRule levelRule)
+            field = value;
+            NotifyPropertyChanged();
+        }
+    }
+
+    [JsonIgnore]
+    public bool MuteRuleEnabled
+    {
+        get => MuteRule != null;
+        set
+        {
+            if (value && MuteRule == null)
             {
-                LevelRules.Remove(levelRule);
+                MuteRule = new MuteRule();
             }
-        }
-
-        //public LevelRule? LevelRule
-        //{
-        //    get => field;
-        //    set
-        //    {
-        //        field = value;
-        //        NotifyPropertyChanged();
-        //    }
-        //}
-
-        //[JsonIgnore]
-        //public bool LevelRuleEnabled
-        //{
-        //    get => LevelRule != null;
-        //    set
-        //    {
-        //        if (value && LevelRule == null)
-        //        {
-        //            LevelRule = new LevelRule();
-        //        }
-        //        else if (!value && LevelRule != null)
-        //        {
-        //            LevelRule = null;
-        //        }
-
-        //        NotifyPropertyChanged();
-        //    }
-        //}
-
-        public MuteRule? MuteRule
-        {
-            get => field;
-            set
+            else if (!value && MuteRule != null)
             {
-                field = value;
-                NotifyPropertyChanged();
+                MuteRule = null;
             }
-        }
 
-        [JsonIgnore]
-        public bool MuteRuleEnabled
+            NotifyPropertyChanged();
+        }
+    }
+
+    private void AddRule()
+    {
+        LevelRules.Add(new LevelRule());
+    }
+
+    public override RuleBase Clone()
+    {
+        return new SoundElementRule()
         {
-            get => MuteRule != null;
-            set
+            SoundElementMatcher = (MultiSoundElementMatcher)SoundElementMatcher.Clone(),
+            LevelRules = new ObservableCollection<LevelRule>(LevelRules.Select(lr => (LevelRule)lr.Clone())),
+            MuteRule = (MuteRule?)MuteRule?.Clone(),
+        };
+    }
+
+    public override IEnumerable<SoundBoardWarning> GetViolationMessages(Soundboard soundBoard)
+    {
+        var eles = SoundElementMatcher.GetMatchingSoundElements(soundBoard).ToList();
+        foreach (var ele in eles)
+        {
+            if (MuteRule != null)
             {
-                if (value && MuteRule == null)
+                if (MuteRule.ExpectedMuted.HasValue)
                 {
-                    MuteRule = new MuteRule();
-                }
-                else if (!value && MuteRule != null)
-                {
-                    MuteRule = null;
-                }
-
-                NotifyPropertyChanged();
-            }
-        }
-
-        private void AddRule()
-        {
-            LevelRules.Add(new LevelRule());
-        }
-
-        public override RuleBase Clone()
-        {
-            return new SoundElementRule()
-            {
-                SoundElementMatcher = (MultiSoundElementMatcher)SoundElementMatcher.Clone(),
-                LevelRules = new ObservableCollection<LevelRule>(LevelRules.Select(lr => (LevelRule)lr.Clone())),
-                MuteRule = (MuteRule?)MuteRule?.Clone(),
-            };
-        }
-
-        public override IEnumerable<SoundBoardWarning> GetViolationMessages(Soundboard soundBoard)
-        {
-            var eles = SoundElementMatcher.GetMatchingSoundElements(soundBoard).ToList();
-            foreach (var ele in eles)
-            {
-                if (MuteRule != null)
-                {
-                    if (MuteRule.ExpectedMuted.HasValue)
+                    if (MuteRule.ExpectedMuted.Value)
                     {
-                        if (MuteRule.ExpectedMuted.Value)
+                        if (!ele.Muted)
                         {
-                            if (!ele.Muted)
+                            yield return new SoundBoardWarning()
                             {
-                                yield return new SoundBoardWarning()
-                                {
-                                    Text = $"Expected {ele} to be muted, but it is not.",
-                                    Level = SoundBoardWarningLevel.Critical,
-                                };
-                            }
+                                Text = $"Expected {ele} to be muted, but it is not.",
+                                Level = SoundBoardWarningLevel.Critical,
+                            };
                         }
-                        else
+                    }
+                    else
+                    {
+                        if (ele.Muted)
                         {
-                            if (ele.Muted)
+                            yield return new SoundBoardWarning()
                             {
-                                yield return new SoundBoardWarning()
-                                {
-                                    Text = $"Expected {ele} to be not muted, but it is.",
-                                    Level = SoundBoardWarningLevel.Critical,
-                                };
-                            }
+                                Text = $"Expected {ele} to be not muted, but it is.",
+                                Level = SoundBoardWarningLevel.Critical,
+                            };
                         }
                     }
                 }
+            }
 
-                foreach (var levelRule in LevelRules)
+            foreach (var levelRule in LevelRules)
+            {
+                if (levelRule.Operator.HasValue)
                 {
-                    if (levelRule.Operator.HasValue)
+                    switch (levelRule.Operator)
                     {
-                        switch (levelRule.Operator)
-                        {
-                            case LevelOperator.LessThanOrEqualTo:
-                                if (ele.Level > levelRule.Level + _tolerance)
+                        case LevelOperator.LessThanOrEqualTo:
+                            if (ele.Level > levelRule.Level + _tolerance)
+                            {
+                                yield return new SoundBoardWarning()
                                 {
-                                    yield return new SoundBoardWarning()
-                                    {
-                                        Text = $"Expected {ele} to have a level less than {levelRule.Level}, but it is {ele.Level}",
-                                        Level = SoundBoardWarningLevel.Critical,
-                                    };
-                                }
-                                break;
+                                    Text = $"Expected {ele} to have a level less than {levelRule.Level}, but it is {ele.Level}",
+                                    Level = SoundBoardWarningLevel.Critical,
+                                };
+                            }
+                            break;
 
-                            case LevelOperator.GreaterThanOrEqualTo:
-                                if (ele.Level < levelRule.Level - _tolerance)
+                        case LevelOperator.GreaterThanOrEqualTo:
+                            if (ele.Level < levelRule.Level - _tolerance)
+                            {
+                                yield return new SoundBoardWarning()
                                 {
-                                    yield return new SoundBoardWarning()
-                                    {
-                                        Text = $"Expected {ele} to have a level greater than {levelRule.Level}, but it is {ele.Level}",
-                                        Level = SoundBoardWarningLevel.Critical,
-                                    };
-                                }
-                                break;
-                        }
+                                    Text = $"Expected {ele} to have a level greater than {levelRule.Level}, but it is {ele.Level}",
+                                    Level = SoundBoardWarningLevel.Critical,
+                                };
+                            }
+                            break;
                     }
                 }
-
             }
+
         }
     }
 }

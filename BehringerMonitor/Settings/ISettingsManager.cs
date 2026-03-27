@@ -1,8 +1,7 @@
-﻿namespace BehringerMonitor.Settings
+﻿namespace BehringerMonitor.Settings;
+
+public interface ISettingsManager
 {
-    public interface ISettingsManager
-    {
-        BehringerMonitorSettings? ReadSettings();
-        void SaveSettings(BehringerMonitorSettings settings);
-    }
+    BehringerMonitorSettings? ReadSettings();
+    void SaveSettings(BehringerMonitorSettings settings);
 }
